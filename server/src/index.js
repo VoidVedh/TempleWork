@@ -127,31 +127,43 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Serve frontend build if dist directory exists (Production mode)
-const possibleDistPaths = [
-  path.join(__dirname, '../../client/dist'),
-  path.join(__dirname, '../client/dist'),
-  path.join(process.cwd(), '../client/dist'),
-  path.join(process.cwd(), 'client/dist'),
-  '/app/client/dist'
-];
+// Resolve frontend static assets directory
+function resolveFrontendPath() {
+  const candidates = [
+    path.resolve(__dirname, '../public'),
+    path.resolve(__dirname, '../../client/dist'),
+    path.resolve(process.cwd(), 'public'),
+    path.resolve(process.cwd(), '../client/dist'),
+    '/app/server/public',
+    '/app/client/dist'
+  ];
 
-let clientDistPath = possibleDistPaths.find(p => fs.existsSync(p) && fs.existsSync(path.join(p, 'index.html')));
-if (!clientDistPath) {
-  clientDistPath = path.join(__dirname, '../../client/dist');
+  for (const candidate of candidates) {
+    const checkFile = path.join(candidate, 'index.html');
+    if (fs.existsSync(checkFile)) {
+      return candidate;
+    }
+  }
+  return path.resolve(__dirname, '../public');
 }
-console.log(`📁 Serving client SPA from: ${clientDistPath}`);
 
-if (fs.existsSync(clientDistPath)) {
-  app.use(express.static(clientDistPath));
-}
+const clientDistPath = resolveFrontendPath();
+const indexPath = path.join(clientDistPath, 'index.html');
+const hasIndex = fs.existsSync(indexPath);
 
-// Fallback all non-API GET requests to index.html (SPA client routing)
+console.log('====================================================');
+console.log(`📁 Static Assets Directory: ${clientDistPath}`);
+console.log(`📄 index.html Present: ${hasIndex ? 'YES' : 'NO'}`);
+console.log('====================================================');
+
+// 10. Serve static frontend assets
+app.use(express.static(clientDistPath, { index: 'index.html' }));
+
+// 11. Fallback all non-API GET requests to index.html (SPA routing)
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
     return next();
   }
-  const indexPath = path.join(clientDistPath, 'index.html');
   if (fs.existsSync(indexPath)) {
     return res.sendFile(indexPath);
   }

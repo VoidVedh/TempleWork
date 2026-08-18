@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <circle cx="100" cy="100" r="94" fill="none" stroke="#be123c" stroke-width="3" stroke-dasharray="6,3" />
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#be123c" stroke-width="2" />
+  <circle cx="100" cy="100" r="62" fill="none" stroke="#be123c" stroke-width="1.5" />
+  
+  <!-- Curved text path for top -->
+  <path id="curveTop" d="M 25 100 A 75 75 0 0 1 175 100" fill="none" />
+  <!-- Curved text path for bottom -->
+  <path id="curveBottom" d="M 175 100 A 75 75 0 0 1 25 100" fill="none" />
+
+  <text font-family="'Noto Sans Devanagari', sans-serif" font-size="12" font-weight="bold" fill="#be123c" letter-spacing="1">
+    <textPath href="#curveTop" startOffset="50%" text-anchor="middle">
+      एकदंत मित्र मंडळ उचगाव
+    </textPath>
+  </text>
+  
+  <text font-family="'Noto Sans Devanagari', sans-serif" font-size="10" font-weight="bold" fill="#be123c" letter-spacing="1">
+    <textPath href="#curveBottom" startOffset="50%" text-anchor="middle">
+      • REG. NO. MH/08/2024 •
+    </textPath>
+  </text>
+
+  <g transform="translate(100, 100) scale(0.65)">
+    <text x="0" y="-8" font-family="'Noto Sans Devanagari', sans-serif" font-size="20" font-weight="bold" fill="#be123c" text-anchor="middle">卐</text>
+    <text x="0" y="16" font-family="'Noto Sans Devanagari', sans-serif" font-size="14" font-weight="bold" fill="#be123c" text-anchor="middle">अधिकृत शिक्का</text>
+    <text x="0" y="32" font-family="sans-serif" font-size="10" font-weight="bold" fill="#be123c" text-anchor="middle">OFFICIAL SEAL</text>
+  </g>
+</svg>
