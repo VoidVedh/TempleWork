@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+*/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*/.env
+*/.env.local
+
+# SQLite Databases & Backups
+data/*.db
+data/*.db-wal
+data/*.db-shm
+server/data/*.db
+server/data/*.db-wal
+server/data/*.db-shm
+!server/data/.gitkeep
+
+# Build output
+dist/
+client/dist/
+build/
+
+# Uploads
+uploads/*
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Logs & Debug
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+Thumbs.db

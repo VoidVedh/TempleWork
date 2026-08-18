@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: ekdant-mitra-mandal
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: starter
+    region: singapore # or frankfurt/ohio
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5001
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MANDAL_UPI_ID
+        value: ganjaleshivam720-1@oksbi
+      - key: MANDAL_PAYEE_NAME
+        value: Ekdant Mitra Mandal
+      - key: UPLOAD_DIR
+        value: /app/server/data/uploads
+    disk:
+      name: mandal-persistent-data
+      mountPath: /app/server/data
+      sizeGB: 1

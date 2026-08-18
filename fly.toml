@@ -1,0 +1,24 @@
+app = "ekdant-mitra-mandal"
+primary_region = "bom" # Mumbai, India
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  PORT = "5001"
+  MANDAL_UPI_ID = "ganjaleshivam720-1@oksbi"
+  MANDAL_PAYEE_NAME = "Ekdant Mitra Mandal"
+
+[http_service]
+  internal_port = 5001
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+# Persistent Storage Mount for SQLite Database
+[mounts]
+  source = "mandal_data"
+  destination = "/app/server/data"
+  initial_size = "1GB"

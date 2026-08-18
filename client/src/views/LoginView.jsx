@@ -1,0 +1,152 @@
+import React, { useState } from 'react';
+import { Phone, Lock, Eye, EyeOff, LogIn, Sparkles } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+
+export default function LoginView() {
+  const { login } = useAuth();
+  const { t } = useLanguage();
+
+  const [mobile, setMobile] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!mobile || !password) {
+      setError('कृपया मोबाईल नंबर व पासवर्ड टाका.');
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      setError('');
+      await login(mobile, password);
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message || 'लॉगिन करताना त्रुटी आली. कृपया तपशील तपासा.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="login-page-wrap">
+      <div className="login-card">
+        {/* Sacred Header Banner */}
+        <div className="login-header-banner">
+          <div className="login-deities-row">
+            <div className="deity-circle-wrap">
+              <img src="/assets/ganesha_logo.png" alt="श्री गणेश" className="deity-circle-img" />
+              <span className="deity-label">श्री गणेश</span>
+            </div>
+
+            <div className="login-header-titles">
+              <span className="login-invoc">{t('invocation')}</span>
+              <span className="login-fest-sub">{t('mandalSub')}</span>
+              <h1 className="login-mandal-title">{t('mandalName')}</h1>
+              <span className="login-loc">{t('mandalLocation')}</span>
+            </div>
+
+            <div className="deity-circle-wrap">
+              <img src="/assets/shivaji_portrait.png" alt="छ. शिवाजी महाराज" className="deity-circle-img" />
+              <span className="deity-label">छ. शिवाजी महाराज</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Login Form Body */}
+        <div className="login-form-body">
+          <h2 className="login-form-title">मंडळ व्यवस्थापन लॉगिन</h2>
+          <p className="login-form-sub">नोंदणीकृत मोबाईल नंबर व पासवर्ड वापरून प्रवेश करा</p>
+
+          {error && (
+            <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '8px 12px', borderRadius: '8px', fontSize: '11.5px', marginBottom: '14px', fontWeight: 800, border: '1px solid #fecdd3' }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
+            {/* Mobile Number Input */}
+            <div className="form-group">
+              <label className="form-label">नोंदणीकृत मोबाईल नंबर</label>
+              <div className="input-wrapper">
+                <span className="input-icon">
+                  <Phone size={16} />
+                </span>
+                <input
+                  type="tel"
+                  maxLength={10}
+                  className="form-input"
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
+                  placeholder="उदा. 8149793310"
+                  required
+                  id="input-login-mobile"
+                />
+              </div>
+            </div>
+
+            {/* Password Input */}
+            <div className="form-group">
+              <label className="form-label">पासवर्ड</label>
+              <div className="input-wrapper">
+                <span className="input-icon">
+                  <Lock size={16} />
+                </span>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-input"
+                  style={{ paddingRight: '36px' }}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  id="input-login-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#64748b',
+                    display: 'flex'
+                  }}
+                  aria-label="Toggle Password Visibility"
+                  id="btn-toggle-password"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="login-submit-btn"
+              disabled={submitting}
+              id="btn-login-submit"
+            >
+              <LogIn size={18} />
+              <span>{submitting ? 'प्रवेश करत आहे...' : 'लॉगिन करा'}</span>
+            </button>
+          </form>
+
+          <div style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed #ebdcd0', textAlign: 'center' }}>
+            <div style={{ fontSize: '11px', color: '#64748b', lineHeight: 1.4 }}>
+              ॥ सार्वजनिक गणेशोत्सव २०२४ — सर्व हक्क सुरक्षित ॥
+              <br />
+              <span style={{ fontSize: '10px', color: '#94a3b8' }}>पासवर्ड विसरल्यास किंवा नवीन खात्यासाठी मुख्य अध्यक्षांशी संपर्क साधा.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

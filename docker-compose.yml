@@ -1,0 +1,20 @@
+services:
+  ekdant-mandal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ekdant-mandal:production
+    container_name: ekdant-mandal-app
+    restart: unless-stopped
+    ports:
+      - "5001:5001"
+    environment:
+      - NODE_ENV=production
+      - PORT=5001
+      - JWT_SECRET=ekdant-prod-jwt-secret-replace-with-custom-value
+      - MANDAL_UPI_ID=ganjaleshivam720-1@oksbi
+      - MANDAL_PAYEE_NAME=Ekdant Mitra Mandal
+    volumes:
+      # Persistent Storage Mounts for SQLite Database and File Uploads
+      - ./server/data:/app/server/data
+      - ./server/uploads:/app/server/uploads
