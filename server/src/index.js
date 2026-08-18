@@ -128,16 +128,35 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve frontend build if dist directory exists (Production mode)
-const clientDistPath = path.join(__dirname, '../../client/dist');
+const possibleDistPaths = [
+  path.join(__dirname, '../../client/dist'),
+  path.join(__dirname, '../client/dist'),
+  path.join(process.cwd(), '../client/dist'),
+  path.join(process.cwd(), 'client/dist'),
+  '/app/client/dist'
+];
+
+let clientDistPath = possibleDistPaths.find(p => fs.existsSync(p) && fs.existsSync(path.join(p, 'index.html')));
+if (!clientDistPath) {
+  clientDistPath = path.join(__dirname, '../../client/dist');
+}
+console.log(`📁 Serving client SPA from: ${clientDistPath}`);
+
 if (fs.existsSync(clientDistPath)) {
   app.use(express.static(clientDistPath));
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
-      return next();
-    }
-    res.sendFile(path.join(clientDistPath, 'index.html'));
-  });
 }
+
+// Fallback all non-API GET requests to index.html (SPA client routing)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+    return next();
+  }
+  const indexPath = path.join(clientDistPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
+  }
+  res.status(404).send('SPA index.html not found. Please ensure frontend is built.');
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -147,7 +166,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`🚩 Ekdant Mitra Mandal Production API Server running on http://localhost:${PORT}`);
+// Start Server on 0.0.0.0 for Cloud / Docker / Render compatibility
+const HOST = '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`🚩 Ekdant Mitra Mandal Production API Server running on http://${HOST}:${PORT}`);
 });

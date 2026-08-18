@@ -23,8 +23,9 @@ RUN npm ci --omit=dev
 # Copy server code
 COPY server/ ./
 
-# Copy built frontend assets to client/dist for Express static serving
+# Copy built frontend assets to all candidate static paths for 100% reliable serving
 COPY --from=frontend-builder /app/client/dist /app/client/dist
+COPY --from=frontend-builder /app/client/dist /app/server/public
 
 # Create persistent storage directories
 RUN mkdir -p /app/server/data /app/server/uploads
@@ -33,11 +34,11 @@ RUN mkdir -p /app/server/data /app/server/uploads
 VOLUME ["/app/server/data", "/app/server/uploads"]
 
 ENV NODE_ENV=production
-ENV PORT=5001
+ENV PORT=10000
 
-EXPOSE 5001
+EXPOSE 10000 5001
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:5001/api/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://127.0.0.1:${PORT}/api/health || exit 1
 
 CMD ["node", "src/index.js"]
