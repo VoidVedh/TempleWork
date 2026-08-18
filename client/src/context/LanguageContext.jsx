@@ -5,12 +5,18 @@ const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
   const [lang, setLang] = useState(() => {
-    return localStorage.getItem('ekdant_lang') || 'mr';
+    try {
+      return localStorage.getItem('ekdant_lang') || 'mr';
+    } catch {
+      return 'mr';
+    }
   });
 
   const changeLanguage = (newLang) => {
     setLang(newLang);
-    localStorage.setItem('ekdant_lang', newLang);
+    try {
+      localStorage.setItem('ekdant_lang', newLang);
+    } catch {}
   };
 
   const t = (key) => {
