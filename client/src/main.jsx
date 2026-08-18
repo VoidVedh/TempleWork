@@ -62,11 +62,22 @@ class RootErrorBoundary extends React.Component {
   }
 }
 
-const rootEl = document.getElementById('root');
-if (rootEl) {
-  ReactDOM.createRoot(rootEl).render(
+function initApp() {
+  const rootEl = document.getElementById('root');
+  if (!rootEl) {
+    setTimeout(initApp, 20);
+    return;
+  }
+  const root = ReactDOM.createRoot(rootEl);
+  root.render(
     <RootErrorBoundary>
       <App />
     </RootErrorBoundary>
   );
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
 }
