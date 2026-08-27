@@ -2,7 +2,7 @@ import React from 'react';
 import { Shield, Edit, Trash2, CheckCircle2, XCircle } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
-export default function MemberTable({ members, onEditMember, onDeleteMember }) {
+export default function MemberTable({ members, isAdmin = true, onEditMember, onDeleteMember }) {
   const { t } = useLanguage();
 
   return (
@@ -24,7 +24,7 @@ export default function MemberTable({ members, onEditMember, onDeleteMember }) {
               <th>{t('receiptPermCol')}</th>
               <th>{t('expensePermCol')}</th>
               <th>{t('statusCol')}</th>
-              <th>{t('actionsCol')}</th>
+              {isAdmin && <th>{t('actionsCol')}</th>}
             </tr>
           </thead>
           <tbody>
@@ -103,26 +103,28 @@ export default function MemberTable({ members, onEditMember, onDeleteMember }) {
                   )}
                 </td>
 
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <button
-                      className="action-icon-btn"
-                      onClick={() => onEditMember(m)}
-                      title="संपादित करा (Edit)"
-                    >
-                      <Edit size={13} />
-                    </button>
-                    {m.is_protected_founder !== 1 && (
+                {isAdmin && (
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                       <button
-                        className="action-icon-btn delete"
-                        onClick={() => onDeleteMember(m)}
-                        title="हटवा (Delete)"
+                        className="action-icon-btn"
+                        onClick={() => onEditMember(m)}
+                        title="संपादित करा (Edit)"
                       >
-                        <Trash2 size={13} />
+                        <Edit size={13} />
                       </button>
-                    )}
-                  </div>
-                </td>
+                      {m.is_protected_founder !== 1 && (
+                        <button
+                          className="action-icon-btn delete"
+                          onClick={() => onDeleteMember(m)}
+                          title="हटवा (Delete)"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

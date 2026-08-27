@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { UserPlus, RefreshCw, Medal, Shield } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { apiRequest } from '../utils/api';
 import HeroBanner from '../components/layout/HeroBanner';
@@ -10,7 +11,10 @@ import AddMemberModal from '../components/members/AddMemberModal';
 
 export default function MemberPerformanceView() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const { refreshStats } = useData();
+
+  const isAdmin = user && user.role === 'ADMIN';
 
   const [members, setMembers] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
@@ -89,17 +93,19 @@ export default function MemberPerformanceView() {
               <span>ताजे करा (Refresh)</span>
             </button>
 
-            <button
-              className="btn btn-gold"
-              onClick={() => {
-                setEditingMember(null);
-                setIsAddModalOpen(true);
-              }}
-              id="btn-open-add-member"
-            >
-              <UserPlus size={16} />
-              <span>{t('addNewMemberBtn')}</span>
-            </button>
+            {isAdmin && (
+              <button
+                className="btn btn-gold"
+                onClick={() => {
+                  setEditingMember(null);
+                  setIsAddModalOpen(true);
+                }}
+                id="btn-open-add-member"
+              >
+                <UserPlus size={16} />
+                <span>{t('addNewMemberBtn')}</span>
+              </button>
+            )}
           </>
         }
       />
@@ -110,6 +116,7 @@ export default function MemberPerformanceView() {
       {/* 3. Member Directory & Permissions Table */}
       <MemberTable
         members={members}
+        isAdmin={isAdmin}
         onEditMember={handleEditMember}
         onDeleteMember={handleDeleteMember}
       />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Search, Check, Eye, MessageCircle, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { apiRequest } from '../utils/api';
 import { formatIndianCurrency } from '../utils/numberToWords';
@@ -9,7 +10,10 @@ import ReceiptCertificateModal from '../components/receipts/ReceiptCertificateMo
 
 export default function UnpaidReceiptsView({ onNavigate }) {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const { refreshStats } = useData();
+
+  const canChangeStatus = user && (user.role === 'ADMIN' || user.can_change_payment_status === 1);
 
   const [receipts, setReceipts] = useState([]);
   const [search, setSearch] = useState('');
@@ -137,15 +141,17 @@ export default function UnpaidReceiptsView({ onNavigate }) {
                     </strong>
                   </div>
 
-                  <button
-                    className="btn btn-green"
-                    style={{ fontSize: '11px', padding: '4px 8px' }}
-                    onClick={() => handleMarkAsPaid(r)}
-                    title="जमा करा (Mark as Paid)"
-                  >
-                    <Check size={13} />
-                    <span>जमा</span>
-                  </button>
+                  {canChangeStatus && (
+                    <button
+                      className="btn btn-green"
+                      style={{ fontSize: '11px', padding: '4px 8px' }}
+                      onClick={() => handleMarkAsPaid(r)}
+                      title="जमा करा (Mark as Paid)"
+                    >
+                      <Check size={13} />
+                      <span>जमा</span>
+                    </button>
+                  )}
 
                   <button
                     className="action-icon-btn view"

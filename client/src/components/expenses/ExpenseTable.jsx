@@ -8,6 +8,7 @@ export default function ExpenseTable({
   expenses,
   totalCount,
   totalAmount,
+  canManageExpenses = true,
   onPrintVoucher,
   onDeleteExpense
 }) {
@@ -87,13 +88,15 @@ export default function ExpenseTable({
                     >
                       <Printer size={13} />
                     </button>
-                    <button
-                      className="action-icon-btn delete"
-                      onClick={() => onDeleteExpense(exp)}
-                      title={t('deleteExpense')}
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                    {canManageExpenses && (
+                      <button
+                        className="action-icon-btn delete"
+                        onClick={() => onDeleteExpense(exp)}
+                        title={t('deleteExpense')}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

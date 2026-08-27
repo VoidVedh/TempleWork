@@ -37,8 +37,26 @@ function MainApp() {
     return <LoginView />;
   }
 
+  const canAccessView = (view) => {
+    if (!user) return false;
+    switch (view) {
+      case 'expenses':
+        return user.role === 'ADMIN' || user.can_manage_expenses === 1;
+      case 'members':
+      case 'reports':
+      case 'audit':
+        return user.role === 'ADMIN';
+      default:
+        return true;
+    }
+  };
+
   const renderView = () => {
-    switch (currentView) {
+    // Role-based Access Control Guard:
+    // If user lacks permission for requested view, fallback to dashboard safely
+    const effectiveView = canAccessView(currentView) ? currentView : 'dashboard';
+
+    switch (effectiveView) {
       case 'dashboard':
         return <DashboardView onNavigate={(view) => setCurrentView(view)} />;
       case 'pay_vargani':

@@ -25,10 +25,30 @@ export default function NavigationDrawer({ isOpen, onClose, currentView, onSelec
     { id: 'pay_vargani', label: t('payVargani'), icon: QrCode, hasBadge: true, badgeText: 'UPI' },
     { id: 'new_receipt', label: t('newAddReceipt'), icon: FilePlus },
     { id: 'unpaid_receipts', label: t('unpaidReceipts'), icon: Clock },
-    { id: 'expenses', label: t('expenseManager'), icon: TrendingDown },
-    { id: 'members', label: t('memberPerformance'), icon: Users },
-    { id: 'reports', label: t('financialReports'), icon: BarChart3 },
-    { id: 'audit', label: t('auditLog'), icon: ShieldCheck, adminOnly: true }
+    {
+      id: 'expenses',
+      label: t('expenseManager'),
+      icon: TrendingDown,
+      roleRequired: (u) => u?.role === 'ADMIN' || u?.can_manage_expenses === 1
+    },
+    {
+      id: 'members',
+      label: t('memberPerformance'),
+      icon: Users,
+      roleRequired: (u) => u?.role === 'ADMIN'
+    },
+    {
+      id: 'reports',
+      label: t('financialReports'),
+      icon: BarChart3,
+      roleRequired: (u) => u?.role === 'ADMIN'
+    },
+    {
+      id: 'audit',
+      label: t('auditLog'),
+      icon: ShieldCheck,
+      roleRequired: (u) => u?.role === 'ADMIN'
+    }
   ];
 
   const handleItemClick = (id) => {
@@ -61,7 +81,7 @@ export default function NavigationDrawer({ isOpen, onClose, currentView, onSelec
 
         <nav className="drawer-menu-list">
           {menuItems
-            .filter((item) => !item.adminOnly || (user && user.role === 'ADMIN'))
+            .filter((item) => !item.roleRequired || item.roleRequired(user))
             .map((item) => {
               const Icon = item.icon;
               const isActive = currentView === item.id;

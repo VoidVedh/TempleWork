@@ -3,7 +3,7 @@ services:
     name: ekdant-mitra-mandal
     env: docker
     dockerfilePath: Dockerfile
-    plan: free
+    plan: starter
     region: singapore
     healthCheckPath: /api/health
     envVars:
@@ -18,5 +18,10 @@ services:
       - key: MANDAL_PAYEE_NAME
         value: Ekdant Mitra Mandal
       - key: UPLOAD_DIR
-        value: /app/server/uploads
+        value: /app/server/data/uploads
+    disk:
+      name: mandal-persistent-data
+      mountPath: /app/server/data
+      sizeGB: 1
+
 

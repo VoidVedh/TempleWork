@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Search, Filter, Printer } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { apiRequest } from '../utils/api';
 import { formatIndianCurrency } from '../utils/numberToWords';
@@ -11,7 +12,10 @@ import RecordExpenseModal, { EXPENSE_CATEGORIES } from '../components/expenses/R
 
 export default function ExpenseManagerView() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const { refreshStats } = useData();
+
+  const canManageExpenses = user && (user.role === 'ADMIN' || user.can_manage_expenses === 1);
 
   const [expenses, setExpenses] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -180,14 +184,16 @@ export default function ExpenseManagerView() {
               <div style={{ fontSize: '9px', color: '#cbd5e1' }}>नोंदी: {totalCount}</div>
             </div>
 
-            <button
-              className="btn btn-gold"
-              onClick={() => setIsRecordModalOpen(true)}
-              id="btn-open-record-expense"
-            >
-              <Plus size={16} />
-              <span>{t('recordNewExpenseBtn')}</span>
-            </button>
+            {canManageExpenses && (
+              <button
+                className="btn btn-gold"
+                onClick={() => setIsRecordModalOpen(true)}
+                id="btn-open-record-expense"
+              >
+                <Plus size={16} />
+                <span>{t('recordNewExpenseBtn')}</span>
+              </button>
+            )}
           </div>
         }
       />
@@ -229,6 +235,7 @@ export default function ExpenseManagerView() {
         expenses={expenses}
         totalCount={totalCount}
         totalAmount={totalAmount}
+        canManageExpenses={canManageExpenses}
         onPrintVoucher={handlePrintVoucher}
         onDeleteExpense={handleDeleteExpense}
       />

@@ -107,14 +107,16 @@ export default function DashboardView({ onNavigate }) {
               <span>{t('newReceiptBtn')}</span>
             </button>
 
-            <button
-              className="btn btn-crimson"
-              onClick={() => setIsExpenseModalOpen(true)}
-              id="btn-hero-record-expense"
-            >
-              <TrendingDown size={15} />
-              <span>{t('recordExpenseBtn')}</span>
-            </button>
+            {(user?.role === 'ADMIN' || user?.can_manage_expenses === 1) && (
+              <button
+                className="btn btn-crimson"
+                onClick={() => setIsExpenseModalOpen(true)}
+                id="btn-hero-record-expense"
+              >
+                <TrendingDown size={15} />
+                <span>{t('recordExpenseBtn')}</span>
+              </button>
+            )}
 
             <button
               className="btn btn-outline-white btn-icon-only"
@@ -273,13 +275,15 @@ export default function DashboardView({ onNavigate }) {
             <span>📉</span>
             <span>{t('recentExpenses')}</span>
           </div>
-          <button
-            className="section-link"
-            onClick={() => onNavigate('expenses')}
-            id="link-view-all-expenses"
-          >
-            {t('viewAllLink')}
-          </button>
+          {(user?.role === 'ADMIN' || user?.can_manage_expenses === 1) && (
+            <button
+              className="section-link"
+              onClick={() => onNavigate('expenses')}
+              id="link-view-all-expenses"
+            >
+              {t('viewAllLink')}
+            </button>
+          )}
         </div>
 
         {recentExpenses.length === 0 ? (
