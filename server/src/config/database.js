@@ -107,15 +107,17 @@ export function initDatabase() {
   db.exec(`
     CREATE TABLE IF NOT EXISTS upi_contributions (
       id TEXT PRIMARY KEY,
+      intent_ref TEXT UNIQUE,
       donor_name TEXT NOT NULL,
-      donor_mobile TEXT,
+      donor_mobile TEXT NOT NULL,
       amount REAL NOT NULL,
-      upi_ref_no TEXT UNIQUE NOT NULL,
+      upi_ref_no TEXT UNIQUE,
       payment_app TEXT,
-      verification_status TEXT NOT NULL DEFAULT 'PENDING',
-      receipt_id TEXT,
+      verification_status TEXT NOT NULL DEFAULT 'INITIATED',
+      receipt_id TEXT UNIQUE,
       notes TEXT,
-      submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      submitted_at DATETIME,
       verified_at DATETIME,
       verified_by_id TEXT,
       verified_by_name TEXT,
@@ -123,6 +125,20 @@ export function initDatabase() {
       FOREIGN KEY (receipt_id) REFERENCES receipts(id)
     )
   `);
+
+  // Perform backward-compatible column migration if table existed with older schema
+  try {
+    const columns = db.prepare(`PRAGMA table_info(upi_contributions)`).all().map(c => c.name);
+    if (!columns.includes('intent_ref')) {
+      db.exec(`ALTER TABLE upi_contributions ADD COLUMN intent_ref TEXT;`);
+      db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_upi_intent_ref ON upi_contributions(intent_ref);`);
+    }
+    if (!columns.includes('created_at')) {
+      db.exec(`ALTER TABLE upi_contributions ADD COLUMN created_at DATETIME;`);
+    }
+  } catch (e) {
+    console.error('Migration warning on upi_contributions:', e.message);
+  }
 
   console.log('✅ SQLite Database initialized with all required tables.');
 }

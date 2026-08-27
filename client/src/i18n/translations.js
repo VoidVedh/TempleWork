@@ -9,7 +9,7 @@ export const translations = {
     blessing: "॥ श्री गणेशाच्या कृपेने आपल्या घरी सुख, समृद्धी आणि शांती लाभो हीच प्रार्थना धन्यवाद ! ॥",
 
     // Header & Navigation
-    realtimeBadge: "MongoDB Real-Time",
+    realtimeBadge: "SQLite Persistent (WAL)",
     mainDashboard: "मुख्य डॅशबोर्ड",
     newAddReceipt: "नवीन पावती जोडा",
     unpaidReceipts: "येणे बाकी पावत्या",
@@ -220,7 +220,7 @@ export const translations = {
     blessing: "May Lord Ganesha bestow joy, prosperity, and peace upon your family. Thank you!",
 
     // Header & Navigation
-    realtimeBadge: "MongoDB Real-Time",
+    realtimeBadge: "SQLite Persistent (WAL)",
     mainDashboard: "Main Dashboard",
     newAddReceipt: "New Add Receipt",
     unpaidReceipts: "Unpaid Receipts",

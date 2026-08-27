@@ -13,7 +13,7 @@ import { createExpense, listExpenses, deleteExpense } from './controllers/expens
 import { getMembersAndLeaderboard, createMember, updateMember, deleteMember } from './controllers/memberController.js';
 import { getFinancialReports, exportReceiptsCSV, exportExpensesCSV } from './controllers/reportController.js';
 import { getAuditLogs } from './controllers/auditController.js';
-import { getUpiConfig, submitUpiContribution, listPendingContributions, listAllContributions, verifyContribution, rejectContribution } from './controllers/upiController.js';
+import { getUpiConfig, initiatePaymentIntent, submitUpiContribution, checkContributionStatus, listPendingContributions, listAllContributions, verifyContribution, rejectContribution } from './controllers/upiController.js';
 import { authenticateToken, requireAdmin, requireExpenseAuthority, requirePaymentStatusAuthority } from './middlewares/authMiddleware.js';
 import { upload } from './middlewares/uploadMiddleware.js';
 
@@ -97,7 +97,9 @@ app.get('/api/audit-logs', authenticateToken, requireAdmin, getAuditLogs);
 
 // 8. UPI Contribution Routes
 app.get('/api/upi/config', getUpiConfig);
+app.post('/api/upi/initiate', initiatePaymentIntent);
 app.post('/api/upi/submit-utr', submitUpiContribution);
+app.get('/api/upi/status/:identifier', checkContributionStatus);
 app.get('/api/upi/pending', authenticateToken, requireAdmin, listPendingContributions);
 app.get('/api/upi/all', authenticateToken, listAllContributions);
 app.post('/api/upi/:id/verify', authenticateToken, requireAdmin, verifyContribution);
