@@ -16,21 +16,23 @@ export function ensureCleanProductionDatabase() {
       'mandal-1',
       process.env.MANDAL_NAME_EN || 'Shree Siddhivinayak Mandir',
       process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर',
-      process.env.MANDAL_LOCATION_EN || 'Unchgaon, Kolhapur (Maharashtra)',
-      process.env.MANDAL_LOCATION_MR || 'उचगाव, ता. करवीर, जि. कोल्हापूर',
+      process.env.MANDAL_LOCATION_EN || 'Airoli Sector-5, Navi Mumbai 400708',
+      process.env.MANDAL_LOCATION_MR || 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८',
       process.env.MANDAL_REG_NO || 'MH/08/2024',
       parseInt(process.env.MANDAL_YEAR || '2024', 10)
     );
     console.log('🏛️ Mandal production settings initialized.');
   } else {
-    // Update existing settings to reflect the current mandal name
+    // Update existing settings to reflect the current mandal name and address
     db.prepare(`
       UPDATE mandal_settings 
-      SET name_en = ?, name_mr = ?
+      SET name_en = ?, name_mr = ?, location_en = ?, location_mr = ?
       WHERE id = 'mandal-1'
     `).run(
       process.env.MANDAL_NAME_EN || 'Shree Siddhivinayak Mandir',
-      process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर'
+      process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर',
+      process.env.MANDAL_LOCATION_EN || 'Airoli Sector-5, Navi Mumbai 400708',
+      process.env.MANDAL_LOCATION_MR || 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८'
     );
   }
 

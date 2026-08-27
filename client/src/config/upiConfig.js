@@ -2,7 +2,7 @@ export const MANDAL_UPI_CONFIG = {
   upiId: 'ganjaleshivam720-1@oksbi',
   payeeName: 'Shree Siddhivinayak Mandir',
   payeeNameMr: 'श्री सिद्धिविनायक मंदिर',
-  mandalLocation: 'उचगाव, ता. करवीर, जि. कोल्हापूर'
+  mandalLocation: 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८'
 };
 
 export function buildUpiDeepLink({ amount, note = 'Shree Siddhivinayak Mandir Vargani' }) {

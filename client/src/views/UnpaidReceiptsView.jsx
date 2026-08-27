@@ -130,7 +130,7 @@ export default function UnpaidReceiptsView({ onNavigate }) {
                   </div>
                   <div style={{ fontSize: '10.5px', color: '#64748b' }}>
                     {r.donor_mobile && `मो: ${r.donor_mobile} • `}
-                    पत्ता: {r.address_galli || 'उचगाव'} • तारीख: {formatDate(r.issue_date)}
+                    पत्ता: {r.address_galli || 'ऐरोली, नवी मुंबई'} • तारीख: {formatDate(r.issue_date)}
                   </div>
                 </div>
 

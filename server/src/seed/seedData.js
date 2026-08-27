@@ -22,8 +22,8 @@ export function seedInitialData() {
     'mandal-1',
     'Shree Siddhivinayak Mandir',
     'श्री सिद्धिविनायक मंदिर',
-    'Unchgaon, Kolhapur (Maharashtra)',
-    'उचगाव, ता. करवीर, जि. कोल्हापूर',
+    'Airoli Sector-5, Navi Mumbai 400708',
+    'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८',
     'MH/08/2024',
     2024
   );

@@ -18,7 +18,7 @@ export default function ReceiptCertificateModal({ isOpen, onClose, receipt }) {
     const mobile = receipt.donor_mobile ? receipt.donor_mobile.replace(/\D/g, '') : '';
     const phoneWithCountry = mobile.startsWith('91') ? mobile : `91${mobile}`;
     
-    const message = `🚩 *॥ श्री गणेशाय नमः ॥* 🚩\n*श्री सिद्धिविनायक मंदिर (उचगाव, कोल्हापूर)*\n\n*सार्वजनिक गणेशोत्सव २०२४ वर्गणी पावती*\n----------------------------------\n*पावती क्र.* : ${receipt.receipt_no}\n*दिनांक* : ${formatDate(receipt.issue_date)}\n*दाता नाव* : ${receipt.donor_name}\n*रक्कम* : ₹ ${receipt.amount.toLocaleString('en-IN')}/-\n*अक्षरी* : ${receipt.amount_in_words}\n*पेमेंट मोड* : ${receipt.payment_mode}\n*स्थिती* : ${receipt.payment_status === 'Paid' ? 'जमा (PAID)' : 'येणे बाकी (UNPAID)'}\n*गोळाकर्ता* : ${receipt.collector_name}\n----------------------------------\n॥ गणपती बाप्पा मोरया, मंगलमूर्ती मोरया ॥\nआपल्या दानाबद्दल श्री सिद्धिविनायक मंदिर आपले मनःपूर्वक आभारी आहे!`;
+    const message = `🚩 *॥ श्री गणेशाय नमः ॥* 🚩\n*श्री सिद्धिविनायक मंदिर (ऐरोली सेक्टर-५, नवी मुंबई ४००७०८)*\n\n*सार्वजनिक गणेशोत्सव २०२४ वर्गणी पावती*\n----------------------------------\n*पावती क्र.* : ${receipt.receipt_no}\n*दिनांक* : ${formatDate(receipt.issue_date)}\n*दाता नाव* : ${receipt.donor_name}\n*रक्कम* : ₹ ${receipt.amount.toLocaleString('en-IN')}/-\n*अक्षरी* : ${receipt.amount_in_words}\n*पेमेंट मोड* : ${receipt.payment_mode}\n*स्थिती* : ${receipt.payment_status === 'Paid' ? 'जमा (PAID)' : 'येणे बाकी (UNPAID)'}\n*गोळाकर्ता* : ${receipt.collector_name}\n----------------------------------\n॥ गणपती बाप्पा मोरया, मंगलमूर्ती मोरया ॥\nआपल्या दानाबद्दल श्री सिद्धिविनायक मंदिर आपले मनःपूर्वक आभारी आहे!`;
 
     const encoded = encodeURIComponent(message);
     const url = mobile ? `https://wa.me/${phoneWithCountry}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
@@ -151,7 +151,7 @@ export default function ReceiptCertificateModal({ isOpen, onClose, receipt }) {
                     </tr>
                     <tr>
                       <td className="cert-label-col">{t('addressLabel')}</td>
-                      <td className="cert-val-col">{receipt.address_galli || 'उचगाव (कोल्हापूर)'}</td>
+                      <td className="cert-val-col">{receipt.address_galli || 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८'}</td>
                     </tr>
                     <tr>
                       <td className="cert-label-col">{t('wordsLabel')}</td>
