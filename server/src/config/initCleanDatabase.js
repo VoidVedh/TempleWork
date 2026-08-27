@@ -14,14 +14,24 @@ export function ensureCleanProductionDatabase() {
     `);
     mandalStmt.run(
       'mandal-1',
-      process.env.MANDAL_NAME_EN || 'Ekdant Mitra Mandal Unchgaon',
-      process.env.MANDAL_NAME_MR || 'एकदंत मित्र मंडळ, उचगाव',
+      process.env.MANDAL_NAME_EN || 'Shree Siddhivinayak Mandir',
+      process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर',
       process.env.MANDAL_LOCATION_EN || 'Unchgaon, Kolhapur (Maharashtra)',
       process.env.MANDAL_LOCATION_MR || 'उचगाव, ता. करवीर, जि. कोल्हापूर',
       process.env.MANDAL_REG_NO || 'MH/08/2024',
       parseInt(process.env.MANDAL_YEAR || '2024', 10)
     );
     console.log('🏛️ Mandal production settings initialized.');
+  } else {
+    // Update existing settings to reflect the current mandal name
+    db.prepare(`
+      UPDATE mandal_settings 
+      SET name_en = ?, name_mr = ?
+      WHERE id = 'mandal-1'
+    `).run(
+      process.env.MANDAL_NAME_EN || 'Shree Siddhivinayak Mandir',
+      process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर'
+    );
   }
 
   // 2. Ensure ONLY the legitimate Founder Administrator account exists if no users exist

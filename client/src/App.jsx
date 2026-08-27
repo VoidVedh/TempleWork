@@ -26,7 +26,7 @@ function MainApp() {
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fdfaf6', fontFamily: 'sans-serif' }}>
         <div style={{ textAlign: 'center' }}>
           <img src="/assets/ganesha_logo.png" alt="Ganesha" style={{ width: '60px', height: '60px', borderRadius: '50%', marginBottom: '12px' }} />
-          <div style={{ color: '#7f1d1d', fontWeight: 800, fontSize: '16px' }}>एकदंत मित्र मंडळ, उचगाव</div>
+          <div style={{ color: '#7f1d1d', fontWeight: 800, fontSize: '16px' }}>श्री सिद्धिविनायक मंदिर</div>
           <div style={{ color: '#64748b', fontSize: '12px', marginTop: '4px' }}>सिस्टम सुरू होत आहे...</div>
         </div>
       </div>

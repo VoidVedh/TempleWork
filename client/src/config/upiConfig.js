@@ -1,11 +1,11 @@
 export const MANDAL_UPI_CONFIG = {
   upiId: 'ganjaleshivam720-1@oksbi',
-  payeeName: 'Ekdant Mitra Mandal Unchgaon',
-  payeeNameMr: 'एकदंत मित्र मंडळ, उचगाव',
+  payeeName: 'Shree Siddhivinayak Mandir',
+  payeeNameMr: 'श्री सिद्धिविनायक मंदिर',
   mandalLocation: 'उचगाव, ता. करवीर, जि. कोल्हापूर'
 };
 
-export function buildUpiDeepLink({ amount, note = 'Ekdant Mandal Vargani' }) {
+export function buildUpiDeepLink({ amount, note = 'Shree Siddhivinayak Mandir Vargani' }) {
   const pa = encodeURIComponent(MANDAL_UPI_CONFIG.upiId);
   const pn = encodeURIComponent(MANDAL_UPI_CONFIG.payeeName);
   const tn = encodeURIComponent(note);

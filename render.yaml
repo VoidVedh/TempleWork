@@ -16,7 +16,7 @@ services:
       - key: MANDAL_UPI_ID
         value: ganjaleshivam720-1@oksbi
       - key: MANDAL_PAYEE_NAME
-        value: Ekdant Mitra Mandal
+        value: Shree Siddhivinayak Mandir
       - key: UPLOAD_DIR
         value: /app/server/data/uploads
     disk:

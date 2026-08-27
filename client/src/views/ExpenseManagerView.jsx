@@ -107,7 +107,7 @@ export default function ExpenseManagerView() {
             
             <div class="header">
               <div class="invoc">॥ श्री गणेशाय नमः ॥</div>
-              <div class="title">एकदंत मित्र मंडळ, उचगाव</div>
+              <div class="title">श्री सिद्धिविनायक मंदिर</div>
               <div class="sub">उचगाव, ता. करवीर, जि. कोल्हापूर • Reg. No. MH/08/2024</div>
               <div class="badge">अधिकृत खर्च पेमेंट व्हाउचर (EXPENSE VOUCHER)</div>
             </div>

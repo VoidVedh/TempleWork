@@ -51,7 +51,7 @@ export default function ReportsView() {
         const downloadUrl = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = downloadUrl;
-        a.download = `Ekdant_Mandal_${type.toUpperCase()}_${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `Siddhivinayak_Mandir_${type.toUpperCase()}_${new Date().toISOString().split('T')[0]}.csv`;
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -68,7 +68,7 @@ export default function ReportsView() {
       {/* 1. Hero Banner (Emerald Green) */}
       <HeroBanner
         theme="green"
-        tag="EKDANT MITRA MANDAL UNCHGAON"
+        tag="SHREE SIDDHIVINAYAK MANDIR"
         title={t('reportsTitle')}
         subtitle={t('reportsSub')}
         actions={

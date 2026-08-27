@@ -79,7 +79,7 @@ export default function MemberPerformanceView() {
       {/* 1. Hero Banner */}
       <HeroBanner
         theme="brown"
-        tag="॥ संघटन हेच सामर्थ्य ॥ • EKDANT MITRA MANDAL"
+        tag="॥ संघटन हेच सामर्थ्य ॥ • SHREE SIDDHIVINAYAK MANDIR"
         title={t('memberTitle')}
         subtitle={t('memberSub')}
         actions={

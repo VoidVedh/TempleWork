@@ -111,9 +111,10 @@ app.get('/api/health', (req, res) => {
     status: 'ok',
     environment: process.env.NODE_ENV || 'development',
     time: new Date().toISOString(),
-    mandal: process.env.MANDAL_NAME_MR || 'एकदंत मित्र मंडळ, उचगाव'
+    mandal: process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर'
   });
 });
+
 
 // Resolve frontend static assets directory
 function resolveFrontendPath() {
@@ -169,5 +170,5 @@ app.use((err, req, res, next) => {
 // Start Server on 0.0.0.0 for Cloud / Docker / Render compatibility
 const HOST = '0.0.0.0';
 app.listen(PORT, HOST, () => {
-  console.log(`🚩 Ekdant Mitra Mandal Production API Server running on http://${HOST}:${PORT}`);
+  console.log(`🚩 Shree Siddhivinayak Mandir Production API Server running on http://${HOST}:${PORT}`);
 });

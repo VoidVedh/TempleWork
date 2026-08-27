@@ -1,7 +1,7 @@
 export const translations = {
   mr: {
     // Mandal Identity
-    mandalName: "एकदंत मित्र मंडळ",
+    mandalName: "श्री सिद्धिविनायक मंदिर",
     mandalSub: "सार्वजनिक गणेशोत्सव २०२४",
     mandalLocation: "उचगाव, ता. करवीर, जि. कोल्हापूर",
     regNo: "रजिस्ट्रेशन क्र. महा/०८/२०२४",
@@ -212,7 +212,7 @@ export const translations = {
 
   en: {
     // Mandal Identity
-    mandalName: "Ekdant Mitra Mandal Unchgaon",
+    mandalName: "Shree Siddhivinayak Mandir",
     mandalSub: "A Divine Sanctuary Sacred & Seraphic Ganeshotsav",
     mandalLocation: "Unchgaon, Kolhapur (Maharashtra)",
     regNo: "Reg. No. MH/08/2024",

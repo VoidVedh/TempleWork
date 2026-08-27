@@ -33,7 +33,7 @@ class RootErrorBoundary extends React.Component {
           textAlign: 'center'
         }}>
           <img src="/assets/ganesha_logo.png" alt="Ganesha" style={{ width: '80px', height: '80px', borderRadius: '50%', marginBottom: '16px', border: '2px solid #ffd700' }} />
-          <h2 style={{ color: '#ffd700', margin: '0 0 8px 0', fontSize: '20px' }}>एकदंत मित्र मंडळ, उचगाव</h2>
+          <h2 style={{ color: '#ffd700', margin: '0 0 8px 0', fontSize: '20px' }}>श्री सिद्धिविनायक मंदिर</h2>
           <p style={{ color: '#fef08a', fontSize: '14px', maxWidth: '400px', lineHeight: 1.5, margin: '0 0 16px 0' }}>
             अ‍ॅप लोड करताना त्रुटी आली. कृपया पान रीलोड करा.
           </p>

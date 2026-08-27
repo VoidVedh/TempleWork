@@ -13,7 +13,7 @@ function getMarathiDay(date) {
 function buildUpiPayload({ upiId, payeeName, amount, intentRef }) {
   const pa = encodeURIComponent(upiId);
   const pn = encodeURIComponent(payeeName);
-  const tn = encodeURIComponent(`Ekdant Vargani ${intentRef}`);
+  const tn = encodeURIComponent(`Siddhivinayak Vargani ${intentRef}`);
   const formattedAmount = Number(amount).toFixed(2);
   return `upi://pay?pa=${pa}&pn=${pn}&am=${formattedAmount}&cu=INR&tn=${tn}`;
 }

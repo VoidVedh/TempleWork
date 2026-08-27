@@ -20,8 +20,8 @@ export function seedInitialData() {
   `);
   mandalStmt.run(
     'mandal-1',
-    'Ekdant Mitra Mandal Unchgaon',
-    'एकदंत मित्र मंडळ, उचगाव',
+    'Shree Siddhivinayak Mandir',
+    'श्री सिद्धिविनायक मंदिर',
     'Unchgaon, Kolhapur (Maharashtra)',
     'उचगाव, ता. करवीर, जि. कोल्हापूर',
     'MH/08/2024',

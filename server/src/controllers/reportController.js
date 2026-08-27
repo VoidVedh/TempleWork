@@ -92,7 +92,7 @@ export function exportReceiptsCSV(req, res) {
       csvContent += `${escape(r.receipt_no)},${escape(r.donor_name)},${escape(r.donor_mobile)},${escape(r.address_galli)},${r.amount},${escape(r.amount_in_words)},${escape(r.payment_mode)},${escape(r.payment_status)},${escape(r.notes)},${escape(r.collector_name)},${escape(r.issue_date)}\n`;
     });
 
-    const filename = `Ekdant_Mandal_Receipts_${Date.now()}.csv`;
+    const filename = `Siddhivinayak_Mandir_Receipts_${Date.now()}.csv`;
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.send('\uFEFF' + csvContent); // Include BOM for Excel Marathi/Devanagari UTF-8 support
@@ -117,7 +117,7 @@ export function exportExpensesCSV(req, res) {
       csvContent += `${escape(e.voucher_no)},${escape(e.title)},${escape(e.category)},${e.amount},${escape(e.paid_to)},${escape(e.payment_method)},${escape(e.authorized_by)},${escape(e.recorder_name)},${escape(e.expense_date)},${escape(e.reason)}\n`;
     });
 
-    const filename = `Ekdant_Mandal_Expenses_${Date.now()}.csv`;
+    const filename = `Siddhivinayak_Mandir_Expenses_${Date.now()}.csv`;
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.send('\uFEFF' + csvContent);
