@@ -1,10 +1,10 @@
 services:
-  ekdant-mandal:
+  siddhivinayak-mandir:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ekdant-mandal:production
-    container_name: ekdant-mandal-app
+    image: siddhivinayak-mandir:production
+    container_name: siddhivinayak-mandir-app
     restart: unless-stopped
     ports:
       - "5001:5001"

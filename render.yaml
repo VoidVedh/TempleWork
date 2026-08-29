@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ekdant-mitra-mandal
+    name: shree-siddhivinayak-mandir
     env: docker
     dockerfilePath: Dockerfile
     plan: starter
