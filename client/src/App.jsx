@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { DataProvider } from './context/DataContext';
@@ -6,6 +6,7 @@ import { DataProvider } from './context/DataContext';
 import AppHeader from './components/layout/AppHeader';
 import NavigationDrawer from './components/layout/NavigationDrawer';
 
+import PublicDevoteePortalView from './views/PublicDevoteePortalView';
 import LoginView from './views/LoginView';
 import DashboardView from './views/DashboardView';
 import NewReceiptView from './views/NewReceiptView';
@@ -20,6 +21,17 @@ function MainApp() {
   const { user, loading } = useAuth();
   const [currentView, setCurrentView] = useState('dashboard');
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isAdminLoginModalOpen, setIsAdminLoginModalOpen] = useState(false);
+
+  // Sync default view when auth state changes
+  useEffect(() => {
+    if (user) {
+      setIsAdminLoginModalOpen(false);
+      setCurrentView('dashboard');
+    } else {
+      setCurrentView('devotee_portal');
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -33,10 +45,27 @@ function MainApp() {
     );
   }
 
-  if (!user) {
-    return <LoginView />;
+  // 1. PUBLIC DEVOTEE PORTAL (Default when unauthenticated or when requested by logged in user)
+  if (!user || currentView === 'devotee_portal') {
+    return (
+      <>
+        <PublicDevoteePortalView
+          onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
+          onNavigateAdmin={() => setCurrentView('dashboard')}
+        />
+
+        {isAdminLoginModalOpen && !user && (
+          <LoginView
+            isModal={true}
+            onClose={() => setIsAdminLoginModalOpen(false)}
+            onBackToPublic={() => setIsAdminLoginModalOpen(false)}
+          />
+        )}
+      </>
+    );
   }
 
+  // 2. ADMIN & COMMITTEE MANAGEMENT SUITE
   const canAccessView = (view) => {
     if (!user) return false;
     switch (view) {
@@ -51,9 +80,7 @@ function MainApp() {
     }
   };
 
-  const renderView = () => {
-    // Role-based Access Control Guard:
-    // If user lacks permission for requested view, fallback to dashboard safely
+  const renderAdminView = () => {
     const effectiveView = canAccessView(currentView) ? currentView : 'dashboard';
 
     switch (effectiveView) {
@@ -80,7 +107,10 @@ function MainApp() {
 
   return (
     <div className="app-container">
-      <AppHeader onOpenMenu={() => setIsDrawerOpen(true)} />
+      <AppHeader
+        onOpenMenu={() => setIsDrawerOpen(true)}
+        onSwitchToDevoteeView={() => setCurrentView('devotee_portal')}
+      />
 
       <NavigationDrawer
         isOpen={isDrawerOpen}
@@ -90,7 +120,7 @@ function MainApp() {
       />
 
       <main className="main-content">
-        {renderView()}
+        {renderAdminView()}
       </main>
     </div>
   );

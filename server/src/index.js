@@ -7,8 +7,8 @@ import fs from 'fs';
 import { initDatabase } from './config/database.js';
 import { ensureCleanProductionDatabase } from './config/initCleanDatabase.js';
 import { login, getCurrentUser, logout } from './controllers/authController.js';
-import { getDashboardStats } from './controllers/dashboardController.js';
-import { createReceipt, listReceipts, getReceiptById, updateReceiptStatus } from './controllers/receiptController.js';
+import { getDashboardStats, getPublicStats, getPublicCampaigns } from './controllers/dashboardController.js';
+import { createReceipt, listReceipts, getReceiptById, updateReceiptStatus, searchPublicReceipts, verifyPublicReceipt, cancelReceipt } from './controllers/receiptController.js';
 import { createExpense, listExpenses, deleteExpense } from './controllers/expenseController.js';
 import { getMembersAndLeaderboard, createMember, updateMember, deleteMember } from './controllers/memberController.js';
 import { getFinancialReports, exportReceiptsCSV, exportExpensesCSV } from './controllers/reportController.js';
@@ -45,12 +45,21 @@ ensureCleanProductionDatabase();
 
 // --- API ROUTES ---
 
+// 0. Public Devotee & Transparency Routes (No Authentication Required)
+app.get('/api/public/stats', getPublicStats);
+app.get('/api/public/campaigns', getPublicCampaigns);
+app.get('/api/public/receipts/search', searchPublicReceipts);
+app.get('/api/public/receipts/:id/verify', verifyPublicReceipt);
+app.post('/api/public/donations', initiatePaymentIntent);
+app.post('/api/public/payments/utr', submitUpiContribution);
+app.get('/api/public/payment-status/:identifier', checkContributionStatus);
+
 // 1. Auth Routes
 app.post('/api/auth/login', login);
 app.get('/api/auth/me', authenticateToken, getCurrentUser);
 app.post('/api/auth/logout', authenticateToken, logout);
 
-// 2. Dashboard Stats
+// 2. Dashboard Stats (Admin / Staff)
 app.get('/api/dashboard/stats', authenticateToken, getDashboardStats);
 
 // 3. Receipts Routes
@@ -58,6 +67,7 @@ app.get('/api/receipts', authenticateToken, listReceipts);
 app.get('/api/receipts/:id', authenticateToken, getReceiptById);
 app.post('/api/receipts', authenticateToken, createReceipt);
 app.patch('/api/receipts/:id/status', authenticateToken, requirePaymentStatusAuthority, updateReceiptStatus);
+app.patch('/api/receipts/:id/cancel', authenticateToken, requireAdmin, cancelReceipt);
 
 // 4. Expenses Routes
 app.get('/api/expenses', authenticateToken, listExpenses);

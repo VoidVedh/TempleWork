@@ -1424,21 +1424,1152 @@ body {
   box-shadow: 0 6px 16px rgba(136, 19, 55, 0.5);
 }
 
-/* === PRINT STYLES === */
-@media print {
-  body {
-    background: #ffffff;
-    color: #000000;
+/* === PUBLIC DEVOTEE PORTAL STYLES === */
+.public-portal-container {
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+  font-family: var(--font-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.public-header {
+  background: var(--grad-maroon-dark);
+  border-bottom: 2px solid var(--sacred-gold);
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(76, 5, 25, 0.25);
+}
+
+.public-header-inner {
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.public-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.public-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--sacred-gold);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.public-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.public-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.public-sub {
+  font-size: 10.5px;
+  color: #fed7aa;
+  display: flex;
+  align-items: center;
+}
+
+.public-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-admin-login-entry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(254, 215, 170, 0.4);
+  color: #fed7aa;
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-admin-login-entry:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border-color: var(--sacred-gold);
+}
+
+.btn-admin-switch,
+.btn-header-devotee-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--sacred-gold);
+  color: #451a03;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-admin-switch:hover,
+.btn-header-devotee-switch:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Admin floating banner in devotee view */
+.admin-status-banner {
+  background: #fef3c7;
+  border-bottom: 1px solid #fde68a;
+  padding: 6px 16px;
+}
+
+.admin-status-content {
+  max-width: 1050px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #78350f;
+  font-weight: 700;
+  gap: 8px;
+}
+
+.admin-status-badge {
+  background: #f59e0b;
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.btn-admin-return-link {
+  background: #78350f;
+  color: #ffffff;
+  border: none;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Hero Section */
+.public-hero-section {
+  max-width: 1050px;
+  margin: 16px auto 0 auto;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.hero-sacred-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  color: #92400e;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.hero-temple-intro {
+  background: var(--grad-maroon-dark);
+  border: 2px solid var(--sacred-gold);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  color: #ffffff;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-deities-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.hero-deity-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: 2px solid var(--sacred-gold);
+  background-color: #ffffff;
+  padding: 2px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.hero-temple-heading {
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 4px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.hero-temple-location {
+  font-size: 13px;
+  color: #fde047;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.hero-temple-blessing {
+  font-size: 12.5px;
+  color: #fed7aa;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Timings Grid */
+.temple-timings-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.timing-card {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  box-shadow: var(--shadow-sm);
+}
+
+.timing-icon {
+  font-size: 22px;
+}
+
+.timing-title {
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--sacred-maroon-900);
+}
+
+.timing-time {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* Transparency Banner */
+.public-transparency-stats {
+  max-width: 1050px;
+  margin: 16px auto 0 auto;
+  padding: 0 16px;
+  width: 100%;
+}
+
+.transparency-card-main {
+  background: linear-gradient(135deg, #fffdf8 0%, #fef3c7 100%);
+  border: 2px solid var(--sacred-gold);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: var(--shadow-md);
+}
+
+.transparency-sub {
+  font-size: 12px;
+  font-weight: 800;
+  color: #854d0e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.transparency-amount {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--sacred-maroon-900);
+  margin: 4px 0;
+  font-feature-settings: 'tnum';
+}
+
+.transparency-footer-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #15803d;
+}
+
+.transparency-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-hero-donate-now {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--grad-btn-maroon);
+  color: #ffffff;
+  border: 1px solid var(--sacred-gold);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(136, 19, 55, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-hero-donate-now:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.btn-hero-search-receipt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #ffffff;
+  color: var(--sacred-maroon-900);
+  border: 1.5px solid var(--sacred-gold);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Campaigns Grid */
+.campaigns-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.campaign-badge-card {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.campaign-badge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.campaign-pct-tag {
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 10.5px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #a7f3d0;
+}
+
+.campaign-progress-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.campaign-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b 0%, #10b981 100%);
+  border-radius: 3px;
+}
+
+.campaign-amounts-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+/* Devotee Nav Tabs */
+.public-nav-tabs {
+  max-width: 1050px;
+  margin: 20px auto 0 auto;
+  padding: 0 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.public-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  font-weight: 900;
+  color: #64748b;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.public-tab-btn.active {
+  background: var(--sacred-maroon-900);
+  border-color: var(--sacred-gold);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(136, 19, 55, 0.35);
+}
+
+/* Tab Content */
+.public-tab-content {
+  max-width: 1050px;
+  margin: 14px auto 30px auto;
+  padding: 0 16px;
+  width: 100%;
+}
+
+.public-donation-form-card,
+.public-donation-qr-card,
+.receipt-search-card,
+.honor-roll-card {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.form-sacred-header {
+  border-bottom: 1.5px dashed #ebdcd0;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.form-sacred-title {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--sacred-maroon-900);
+}
+
+.form-sacred-sub {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.public-error-banner {
+  background: #fee2e2;
+  border: 1.5px solid #fecdd3;
+  color: #991b1b;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.public-error-banner.small {
+  padding: 8px 10px;
+  font-size: 11px;
+}
+
+/* Preset Amount Pills */
+.preset-amounts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.preset-pill {
+  padding: 10px 8px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 900;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.preset-pill.active {
+  background: #ecfdf5;
+  border-color: #059669;
+  color: #047857;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.custom-amount-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-prefix {
+  position: absolute;
+  left: 12px;
+  font-size: 15px;
+  font-weight: 900;
+  color: #64748b;
+}
+
+.form-input.custom-amt {
+  padding-left: 28px;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--sacred-maroon-900);
+}
+
+.btn-generate-upi-qr {
+  width: 100%;
+  padding: 13px;
+  background: var(--grad-btn-maroon);
+  color: #ffffff;
+  border: 1.5px solid var(--sacred-gold);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(136, 19, 55, 0.4);
+  margin-top: 12px;
+  transition: all 0.2s ease;
+}
+
+.btn-generate-upi-qr:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* QR Presentation */
+.qr-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.btn-back-link {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-back-link:hover {
+  color: var(--sacred-maroon-900);
+  text-decoration: underline;
+}
+
+.qr-intent-badge {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #475569;
+}
+
+.qr-presentation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 20px;
+}
+
+.qr-canvas-box {
+  background: #fdfaf6;
+  border: 2px solid var(--sacred-gold);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.qr-amount-banner {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--sacred-maroon-900);
+  margin-bottom: 10px;
+}
+
+.qr-canvas-element {
+  max-width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-sm);
+}
+
+.qr-beneficiary-tag {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  color: #64748b;
+  margin: 10px 0;
+}
+
+.qr-beneficiary-tag strong {
+  color: #0f172a;
+  font-size: 12px;
+}
+
+.qr-actions-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-copy-upi,
+.btn-direct-pay-app {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 6px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.btn-copy-upi {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+}
+
+.btn-direct-pay-app {
+  background: #059669;
+  border: 1.5px solid #059669;
+  color: #ffffff;
+}
+
+/* UTR Form */
+.utr-submission-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.utr-box-header .step-badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.utr-box-header h3 {
+  font-size: 15px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.utr-box-header p {
+  font-size: 11.5px;
+  color: #64748b;
+  margin-bottom: 14px;
+}
+
+.utr-input {
+  letter-spacing: 1px;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.btn-submit-utr-confirm {
+  width: 100%;
+  padding: 11px;
+  background: #059669;
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+  margin-top: 10px;
+}
+
+.security-notice-callout {
+  margin-top: 14px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  color: #92400e;
+  font-weight: 700;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Submission Success Card */
+.submission-success-card {
+  text-align: center;
+  padding: 20px 10px;
+}
+
+.status-icon-wrap.pending {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #fef3c7;
+  border: 2px solid #fde68a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px auto;
+}
+
+.status-tag-pending {
+  font-size: 13px;
+  font-weight: 900;
+  color: #b45309;
+  margin-bottom: 16px;
+}
+
+.submission-details-table {
+  max-width: 440px;
+  margin: 0 auto 18px auto;
+  background: #f8fafc;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.submission-details-table .detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #475569;
+}
+
+.submission-details-table .detail-row strong {
+  color: #0f172a;
+}
+
+.submission-next-steps {
+  font-size: 12px;
+  color: #64748b;
+  max-width: 500px;
+  margin: 0 auto 18px auto;
+  line-height: 1.4;
+}
+
+.submission-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Search Receipts Form & Results */
+.btn-search-receipts-submit {
+  width: 100%;
+  padding: 11px;
+  background: var(--sacred-maroon-900);
+  color: #ffffff;
+  border: 1px solid var(--sacred-gold);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.found-receipts-list {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1.5px dashed var(--border-color);
+}
+
+.found-results-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--sacred-maroon-900);
+  margin-bottom: 12px;
+}
+
+.receipts-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.public-receipt-card {
+  background: #fffdfa;
+  border: 1.5px solid var(--sacred-gold);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.rc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rc-no {
+  font-size: 12px;
+  font-weight: 900;
+  color: #78350f;
+  background: #fef3c7;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.rc-status-paid {
+  font-size: 10.5px;
+  font-weight: 900;
+  color: #047857;
+  background: #ecfdf5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.rc-donor-name {
+  font-size: 14px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.rc-meta {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  gap: 6px;
+}
+
+.rc-amount {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--sacred-maroon-900);
+  font-feature-settings: 'tnum';
+}
+
+.btn-rc-view {
+  width: 100%;
+  padding: 8px;
+  background: #ffffff;
+  border: 1.5px solid var(--sacred-gold);
+  color: var(--sacred-maroon-900);
+  border-radius: var(--radius-md);
+  font-size: 11.5px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-rc-view:hover {
+  background: var(--sacred-gold);
+  color: #451a03;
+}
+
+/* Honor Roll Table */
+.honor-roll-table-wrap {
+  overflow-x: auto;
+}
+
+.honor-roll-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.honor-roll-table th {
+  background: #fffdfa;
+  color: var(--sacred-maroon-900);
+  font-weight: 900;
+  padding: 10px;
+  border-bottom: 2px solid var(--border-color);
+  text-align: left;
+}
+
+.honor-roll-table td {
+  padding: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.honor-receipt-tag {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 11px;
+  color: #475569;
+}
+
+.honor-donor-name strong {
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.honor-masked-mob {
+  font-size: 10.5px;
+  color: #94a3b8;
+  display: block;
+}
+
+.honor-mode-tag {
+  background: #ecfdf5;
+  color: #065f46;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.honor-amt-val {
+  font-size: 13.5px;
+  color: #047857;
+  font-feature-settings: 'tnum';
+}
+
+.empty-honor-roll {
+  text-align: center;
+  padding: 30px 10px;
+}
+
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.empty-honor-roll h3 {
+  font-size: 15px;
+  font-weight: 900;
+  color: #475569;
+}
+
+.empty-honor-roll p {
+  font-size: 12px;
+  color: #94a3b8;
+  max-width: 400px;
+  margin: 4px auto 0 auto;
+}
+
+/* Public Footer */
+.public-footer {
+  margin-top: auto;
+  background: var(--grad-maroon-dark);
+  border-top: 2px solid var(--sacred-gold);
+  color: #fed7aa;
+  padding: 18px 16px 12px 16px;
+}
+
+.public-footer-inner {
+  max-width: 1050px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.footer-temple-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--sacred-gold);
+}
+
+.footer-title {
+  font-size: 13.5px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.footer-sub {
+  font-size: 10.5px;
+  color: #fed7aa;
+}
+
+.btn-footer-admin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(254, 215, 170, 0.3);
+  color: #fed7aa;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-footer-admin:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.footer-copyright {
+  max-width: 1050px;
+  margin: 12px auto 0 auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 10.5px;
+  color: #fde047;
+}
+
+/* Login Modal Close & Back Link */
+.login-modal-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: none;
+  color: #ffffff;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.btn-back-to-devotee-link {
+  background: none;
+  border: none;
+  color: var(--sacred-maroon-900);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-back-to-devotee-link:hover {
+  text-decoration: underline;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .temple-timings-grid {
+    grid-template-columns: 1fr;
   }
-  .app-header,
-  .hero-actions,
-  .btn,
-  .navigation-drawer,
-  .drawer-backdrop {
-    display: none !important;
+
+  .transparency-card-main {
+    flex-direction: column;
+    align-items: flex-start;
   }
-  .main-content {
-    padding: 0;
-    max-width: 100%;
+
+  .transparency-right {
+    width: 100%;
+    flex-direction: row;
+  }
+
+  .btn-hero-donate-now,
+  .btn-hero-search-receipt {
+    flex: 1;
+  }
+
+  .preset-amounts-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .qr-presentation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .public-footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-temple-brand {
+    flex-direction: column;
   }
 }

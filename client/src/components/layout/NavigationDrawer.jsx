@@ -22,6 +22,7 @@ export default function NavigationDrawer({ isOpen, onClose, currentView, onSelec
 
   const menuItems = [
     { id: 'dashboard', label: t('mainDashboard'), icon: LayoutDashboard },
+    { id: 'devotee_portal', label: '👁️ ' + (lang === 'mr' ? 'भक्त पोर्टल (Public View)' : 'Devotee Portal (Public)'), icon: QrCode },
     { id: 'pay_vargani', label: t('payVargani'), icon: QrCode, hasBadge: true, badgeText: 'UPI' },
     { id: 'new_receipt', label: t('newAddReceipt'), icon: FilePlus },
     { id: 'unpaid_receipts', label: t('unpaidReceipts'), icon: Clock },

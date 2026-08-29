@@ -3,7 +3,7 @@ import { Menu, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 
-export default function AppHeader({ onOpenMenu }) {
+export default function AppHeader({ onOpenMenu, onSwitchToDevoteeView }) {
   const { user, logout } = useAuth();
   const { lang, changeLanguage, t } = useLanguage();
 
@@ -29,6 +29,17 @@ export default function AppHeader({ onOpenMenu }) {
       </div>
 
       <div className="header-right">
+        {/* Switch to Devotee View Button */}
+        {onSwitchToDevoteeView && (
+          <button
+            className="btn-header-devotee-switch"
+            onClick={onSwitchToDevoteeView}
+            title={lang === 'mr' ? 'भक्तांचे सार्वजनिक पोर्टल पहा' : 'View Public Devotee Portal'}
+          >
+            <span>👁️ {lang === 'mr' ? 'भक्त पोर्टल' : 'Devotee Portal'}</span>
+          </button>
+        )}
+
         {/* Realtime Status Badge */}
         <div className="realtime-pill" title="Live Database Connection Active">
           <span className="pulsing-dot"></span>

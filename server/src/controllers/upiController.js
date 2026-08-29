@@ -371,18 +371,21 @@ export function verifyContribution(req, res) {
     db.prepare(`
       INSERT INTO receipts (
         id, receipt_no, donor_name, donor_mobile, address_galli,
-        amount, amount_in_words, payment_mode, payment_status, notes,
-        collector_id, collector_name, issue_date, marathi_day
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Paid', ?, ?, ?, ?, ?)
+        amount, amount_in_words, payment_mode, payment_status, 
+        category_code, upi_ref_no, notes,
+        collector_id, collector_name, issue_date, marathi_day, is_cancelled
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Paid', ?, ?, ?, ?, ?, ?, ?, 0)
     `).run(
       receiptId,
       receipt_no,
       contribution.donor_name,
       contribution.donor_mobile || '',
-      'ऑनलाइन देणगी (Online UPI)',
+      contribution.address_galli || 'ऑनलाइन देणगी (Online UPI)',
       contribution.amount,
       inWords,
       paymentModeLabel,
+      contribution.category_code || 'GANESHOTSAV_2024',
+      contribution.upi_ref_no,
       receiptNotes,
       collector_id,
       collector_name,
@@ -405,6 +408,24 @@ export function verifyContribution(req, res) {
       collector_name,
       contributionId
     );
+
+    // Sync Donors Table
+    if (contribution.donor_mobile) {
+      const cleanMob = contribution.donor_mobile.replace(/\D/g, '');
+      const existingDonor = db.prepare('SELECT * FROM donors WHERE mobile = ?').get(cleanMob);
+      if (existingDonor) {
+        db.prepare(`
+          UPDATE donors 
+          SET name = ?, total_contributions = total_contributions + ?, contributions_count = contributions_count + 1, updated_at = CURRENT_TIMESTAMP
+          WHERE mobile = ?
+        `).run(contribution.donor_name, contribution.amount, cleanMob);
+      } else {
+        db.prepare(`
+          INSERT INTO donors (id, name, mobile, address_galli, total_contributions, contributions_count, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        `).run(crypto.randomUUID(), contribution.donor_name, cleanMob, contribution.address_galli || '', contribution.amount);
+      }
+    }
 
     const createdReceipt = db.prepare('SELECT * FROM receipts WHERE id = ?').get(receiptId);
     const updatedContribution = db.prepare('SELECT * FROM upi_contributions WHERE id = ?').get(contributionId);

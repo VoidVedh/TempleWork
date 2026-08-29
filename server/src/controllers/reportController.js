@@ -1,25 +1,27 @@
 import db from '../config/database.js';
+import { logAuditEvent } from '../utils/auditLogger.js';
 
 export function getFinancialReports(req, res) {
   try {
-    // 1. Paid collections
+    // 1. Paid collections (non-cancelled)
     const paidRow = db.prepare(`
       SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total
       FROM receipts
-      WHERE payment_status = 'Paid'
+      WHERE payment_status = 'Paid' AND (is_cancelled = 0 OR is_cancelled IS NULL)
     `).get();
 
     // 2. Unpaid collections
     const unpaidRow = db.prepare(`
       SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total
       FROM receipts
-      WHERE payment_status = 'Unpaid'
+      WHERE payment_status = 'Unpaid' AND (is_cancelled = 0 OR is_cancelled IS NULL)
     `).get();
 
-    // 3. Expenses
+    // 3. Expenses (non-cancelled and approved)
     const expRow = db.prepare(`
       SELECT COUNT(*) as count, COALESCE(SUM(amount), 0) as total
       FROM expenses
+      WHERE (is_cancelled = 0 OR is_cancelled IS NULL) AND (status = 'APPROVED' OR status IS NULL)
     `).get();
 
     const total_paid = paidRow.total;
@@ -31,6 +33,7 @@ export function getFinancialReports(req, res) {
     const categoryStats = db.prepare(`
       SELECT category, COALESCE(SUM(amount), 0) as total, COUNT(*) as count
       FROM expenses
+      WHERE (is_cancelled = 0 OR is_cancelled IS NULL) AND (status = 'APPROVED' OR status IS NULL)
       GROUP BY category
       ORDER BY total DESC
     `).all();
@@ -46,7 +49,7 @@ export function getFinancialReports(req, res) {
     const paymentModeStats = db.prepare(`
       SELECT payment_mode, COALESCE(SUM(amount), 0) as total, COUNT(*) as count
       FROM receipts
-      WHERE payment_status = 'Paid'
+      WHERE payment_status = 'Paid' AND (is_cancelled = 0 OR is_cancelled IS NULL)
       GROUP BY payment_mode
       ORDER BY total DESC
     `).all();
@@ -80,17 +83,24 @@ export function getFinancialReports(req, res) {
 export function exportReceiptsCSV(req, res) {
   try {
     const receipts = db.prepare(`
-      SELECT receipt_no, donor_name, donor_mobile, address_galli, amount, amount_in_words, payment_mode, payment_status, notes, collector_name, issue_date
+      SELECT receipt_no, donor_name, donor_mobile, address_galli, amount, amount_in_words, payment_mode, upi_ref_no, payment_status, notes, collector_name, issue_date
       FROM receipts
+      WHERE (is_cancelled = 0 OR is_cancelled IS NULL)
       ORDER BY issue_date DESC
     `).all();
 
-    let csvContent = 'पावती क्र. (Receipt No),दाता नाव (Donor Name),मोबाईल (Mobile),पत्ता (Address),रक्कम (Amount),अक्षरी (In Words),पेमेंट मोड (Payment Mode),स्थिती (Status),नोंद (Notes),कार्यकर्ता (Collector),दिनांक (Issue Date)\n';
+    let csvContent = 'पावती क्र. (Receipt No),दाता नाव (Donor Name),मोबाईल (Mobile),पत्ता (Address),रक्कम (Amount),अक्षरी (In Words),पेमेंट मोड (Payment Mode),UTR/Ref,स्थिती (Status),नोंद (Notes),कार्यकर्ता (Collector),दिनांक (Issue Date)\n';
 
     receipts.forEach(r => {
       const escape = (val) => `"${(val || '').toString().replace(/"/g, '""')}"`;
-      csvContent += `${escape(r.receipt_no)},${escape(r.donor_name)},${escape(r.donor_mobile)},${escape(r.address_galli)},${r.amount},${escape(r.amount_in_words)},${escape(r.payment_mode)},${escape(r.payment_status)},${escape(r.notes)},${escape(r.collector_name)},${escape(r.issue_date)}\n`;
+      csvContent += `${escape(r.receipt_no)},${escape(r.donor_name)},${escape(r.donor_mobile)},${escape(r.address_galli)},${r.amount},${escape(r.amount_in_words)},${escape(r.payment_mode)},${escape(r.upi_ref_no || '')},${escape(r.payment_status)},${escape(r.notes)},${escape(r.collector_name)},${escape(r.issue_date)}\n`;
     });
+
+    logAuditEvent(
+      'EXPORT_REPORT',
+      `पावत्या CSV अहवाल डाउनलोड केला (Total ${receipts.length} records)`,
+      req.user
+    );
 
     const filename = `Siddhivinayak_Mandir_Receipts_${Date.now()}.csv`;
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
@@ -107,6 +117,7 @@ export function exportExpensesCSV(req, res) {
     const expenses = db.prepare(`
       SELECT voucher_no, title, category, amount, paid_to, payment_method, authorized_by, recorder_name, expense_date, reason
       FROM expenses
+      WHERE (is_cancelled = 0 OR is_cancelled IS NULL) AND (status = 'APPROVED' OR status IS NULL)
       ORDER BY expense_date DESC
     `).all();
 
@@ -116,6 +127,12 @@ export function exportExpensesCSV(req, res) {
       const escape = (val) => `"${(val || '').toString().replace(/"/g, '""')}"`;
       csvContent += `${escape(e.voucher_no)},${escape(e.title)},${escape(e.category)},${e.amount},${escape(e.paid_to)},${escape(e.payment_method)},${escape(e.authorized_by)},${escape(e.recorder_name)},${escape(e.expense_date)},${escape(e.reason)}\n`;
     });
+
+    logAuditEvent(
+      'EXPORT_REPORT',
+      `खर्च CSV अहवाल डाउनलोड केला (Total ${expenses.length} records)`,
+      req.user
+    );
 
     const filename = `Siddhivinayak_Mandir_Expenses_${Date.now()}.csv`;
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');

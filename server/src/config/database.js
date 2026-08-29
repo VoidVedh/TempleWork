@@ -114,6 +114,9 @@ export function initDatabase() {
       amount REAL NOT NULL,
       upi_ref_no TEXT UNIQUE,
       payment_app TEXT,
+      category_code TEXT DEFAULT 'GANESHOTSAV_2024',
+      campaign_id TEXT,
+      address_galli TEXT,
       verification_status TEXT NOT NULL DEFAULT 'INITIATED',
       receipt_id TEXT UNIQUE,
       notes TEXT,
@@ -127,18 +130,112 @@ export function initDatabase() {
     )
   `);
 
-  // Perform backward-compatible column migration if table existed with older schema
+  // 7. Donors table (Entity Normalization)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS donors (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      mobile TEXT UNIQUE NOT NULL,
+      email TEXT,
+      address_galli TEXT,
+      total_contributions REAL DEFAULT 0,
+      contributions_count INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // 8. Campaigns table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS campaigns (
+      id TEXT PRIMARY KEY,
+      name_en TEXT NOT NULL,
+      name_mr TEXT NOT NULL,
+      description TEXT,
+      target_amount REAL NOT NULL DEFAULT 500000,
+      category_code TEXT NOT NULL UNIQUE,
+      status TEXT NOT NULL DEFAULT 'ACTIVE',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // 9. Bank Transactions table (Reconciliation)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS bank_transactions (
+      id TEXT PRIMARY KEY,
+      utr TEXT UNIQUE NOT NULL,
+      amount REAL NOT NULL,
+      payer_name TEXT,
+      transaction_date DATETIME NOT NULL,
+      status TEXT NOT NULL DEFAULT 'UNMATCHED',
+      reconciled_with_id TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Seed default campaigns if not present
   try {
-    const columns = db.prepare(`PRAGMA table_info(upi_contributions)`).all().map(c => c.name);
-    if (!columns.includes('intent_ref')) {
+    const campaignCount = db.prepare('SELECT COUNT(*) as count FROM campaigns').get();
+    if (campaignCount.count === 0) {
+      const insertCampaign = db.prepare(`
+        INSERT INTO campaigns (id, name_en, name_mr, description, target_amount, category_code)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `);
+      insertCampaign.run('cmp-1', 'Ganeshotsav 2024 Vargani', 'सार्वजनिक गणेशोत्सव २०२४ वर्गणी', 'Annual Ganesh Festival Celebrations', 500000, 'GANESHOTSAV_2024');
+      insertCampaign.run('cmp-2', 'Mandir Development & Renovation', 'मंदिर जीर्णोद्धार व विकास निधी', 'Temple Infrastructure & Maintenance', 1000000, 'MANDIR_DEVELOPMENT');
+      insertCampaign.run('cmp-3', 'Mahaprasad & Annadaan Fund', 'महाप्रसाद व अन्नदान देणगी', 'Devotee Feast and Annadaan Seva', 250000, 'MAHAPRASAD');
+      insertCampaign.run('cmp-4', 'General Vargani / Donation', 'सामान्य देणगी / वर्गणी', 'General Temple Offerings and Seva', 200000, 'GENERAL');
+    }
+  } catch (e) {
+    console.error('Campaign initialization error:', e.message);
+  }
+
+  // Perform backward-compatible column migrations
+  try {
+    // 1. upi_contributions migrations
+    const upiCols = db.prepare(`PRAGMA table_info(upi_contributions)`).all().map(c => c.name);
+    if (!upiCols.includes('intent_ref')) {
       db.exec(`ALTER TABLE upi_contributions ADD COLUMN intent_ref TEXT;`);
       db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_upi_intent_ref ON upi_contributions(intent_ref);`);
     }
-    if (!columns.includes('created_at')) {
+    if (!upiCols.includes('created_at')) {
       db.exec(`ALTER TABLE upi_contributions ADD COLUMN created_at DATETIME;`);
     }
+    if (!upiCols.includes('category_code')) {
+      db.exec(`ALTER TABLE upi_contributions ADD COLUMN category_code TEXT DEFAULT 'GANESHOTSAV_2024';`);
+    }
+    if (!upiCols.includes('address_galli')) {
+      db.exec(`ALTER TABLE upi_contributions ADD COLUMN address_galli TEXT;`);
+    }
+
+    // 2. receipts migrations
+    const receiptCols = db.prepare(`PRAGMA table_info(receipts)`).all().map(c => c.name);
+    if (!receiptCols.includes('category_code')) {
+      db.exec(`ALTER TABLE receipts ADD COLUMN category_code TEXT DEFAULT 'GANESHOTSAV_2024';`);
+    }
+    if (!receiptCols.includes('is_cancelled')) {
+      db.exec(`ALTER TABLE receipts ADD COLUMN is_cancelled INTEGER NOT NULL DEFAULT 0;`);
+    }
+    if (!receiptCols.includes('cancellation_reason')) {
+      db.exec(`ALTER TABLE receipts ADD COLUMN cancellation_reason TEXT;`);
+    }
+    if (!receiptCols.includes('upi_ref_no')) {
+      db.exec(`ALTER TABLE receipts ADD COLUMN upi_ref_no TEXT;`);
+    }
+
+    // 3. expenses migrations
+    const expenseCols = db.prepare(`PRAGMA table_info(expenses)`).all().map(c => c.name);
+    if (!expenseCols.includes('status')) {
+      db.exec(`ALTER TABLE expenses ADD COLUMN status TEXT DEFAULT 'APPROVED';`);
+    }
+    if (!expenseCols.includes('is_cancelled')) {
+      db.exec(`ALTER TABLE expenses ADD COLUMN is_cancelled INTEGER NOT NULL DEFAULT 0;`);
+    }
+    if (!expenseCols.includes('cancellation_reason')) {
+      db.exec(`ALTER TABLE expenses ADD COLUMN cancellation_reason TEXT;`);
+    }
   } catch (e) {
-    console.error('Migration warning on upi_contributions:', e.message);
+    console.error('Migration warning:', e.message);
   }
 
   console.log('✅ SQLite Database initialized with all required tables.');
