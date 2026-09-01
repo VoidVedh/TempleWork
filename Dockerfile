@@ -1,4 +1,4 @@
-# Multi-Stage Production Dockerfile for Ekdant Mitra Mandal
+# Multi-Stage Production Dockerfile for Shree Siddhivinayak Mandir
 # Stage 1: Build Frontend SPA
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app/client

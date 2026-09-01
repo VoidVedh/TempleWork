@@ -1,7 +1,7 @@
 {
   "name": "ekdant-mandal-server",
   "version": "1.0.0",
-  "description": "Ekdant Mitra Mandal Backend Server",
+  "description": "Shree Siddhivinayak Mandir Backend Server",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
