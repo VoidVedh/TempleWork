@@ -49,7 +49,15 @@ const CONTRIBUTION_CATEGORIES = [
   { code: 'OTHER', name_mr: '🌺 इतर विशेष संकल्प / पूजा देणगी', name_en: 'Other Special Sankalp / Puja' }
 ];
 
-export default function PublicDevoteePortalView({ onOpenAdminLogin, onNavigateAdmin }) {
+export default function PublicDevoteePortalView({ 
+  onOpenAdminLogin, 
+  onNavigateAdmin,
+  onNavigateEvents,
+  onNavigateGallery,
+  onNavigateAnnouncements,
+  onNavigateAbout,
+  onNavigateContact
+}) {
   const { t, lang, changeLanguage } = useLanguage();
   const { user } = useAuth();
 
@@ -291,52 +299,6 @@ export default function PublicDevoteePortalView({ onOpenAdminLogin, onNavigateAd
 
   return (
     <div className="public-portal-container">
-      {/* 1. Header Bar with Deity Emblems & Admin Entry */}
-      <header className="public-header">
-        <div className="public-header-inner">
-          <div className="public-brand">
-            <img src="/assets/ganesha_logo.png" alt="Ganesha" className="public-logo" />
-            <div className="public-brand-text">
-              <span className="public-title">{t('mandalName')}</span>
-              <span className="public-sub">
-                <MapPin size={12} style={{ display: 'inline', marginRight: '3px' }} />
-                {t('mandalLocation')}
-              </span>
-            </div>
-          </div>
-
-          <div className="public-header-actions">
-            {/* Language Switcher */}
-            <div className="lang-toggle-group">
-              <button
-                className={`lang-btn ${lang === 'mr' ? 'active' : ''}`}
-                onClick={() => changeLanguage('mr')}
-              >
-                मराठी
-              </button>
-              <button
-                className={`lang-btn ${lang === 'en' ? 'active' : ''}`}
-                onClick={() => changeLanguage('en')}
-              >
-                English
-              </button>
-            </div>
-
-            {/* Admin Entry Button */}
-            {user ? (
-              <button className="btn-admin-switch" onClick={onNavigateAdmin}>
-                <ShieldCheck size={16} />
-                <span>{lang === 'mr' ? 'व्यवस्थापन डॅशबोर्ड ->' : 'Admin Panel ->'}</span>
-              </button>
-            ) : (
-              <button className="btn-admin-login-entry" onClick={onOpenAdminLogin}>
-                <LogIn size={15} />
-                <span>{lang === 'mr' ? 'कार्यकर्ता / Admin लॉगिन' : 'Admin Login'}</span>
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
 
       {/* Admin Floating Banner if logged in */}
       {user && (
@@ -460,6 +422,32 @@ export default function PublicDevoteePortalView({ onOpenAdminLogin, onNavigateAd
             })}
           </div>
         )}
+        {/* Quick Portal Navigation Cards */}
+        <div className="quick-portal-shortcuts-grid mb-6">
+          <div className="shortcut-card" onClick={onNavigateEvents}>
+            <div className="shortcut-icon-box gold">🎪</div>
+            <div className="shortcut-text">
+              <h4>{lang === 'mr' ? 'उत्सव व कार्यक्रम' : 'Events & Utsav'}</h4>
+              <p>{lang === 'mr' ? 'आगामी पूजा, महाआरती व मोफत नोंदणी ->' : 'Upcoming Pujas & Event Pass ->'}</p>
+            </div>
+          </div>
+
+          <div className="shortcut-card" onClick={onNavigateGallery}>
+            <div className="shortcut-icon-box crimson">📸</div>
+            <div className="shortcut-text">
+              <h4>{lang === 'mr' ? 'छायाचित्र दालन' : 'Photo Gallery'}</h4>
+              <p>{lang === 'mr' ? 'गणेशोत्सव व महाप्रसाद दर्शन ->' : 'HD Darshan & Celebrations ->'}</p>
+            </div>
+          </div>
+
+          <div className="shortcut-card" onClick={onNavigateAnnouncements}>
+            <div className="shortcut-icon-box orange">📢</div>
+            <div className="shortcut-text">
+              <h4>{lang === 'mr' ? 'सूचना फलक' : 'Notice Board'}</h4>
+              <p>{lang === 'mr' ? 'अधिकृत परिपत्रक व ताज्या घडामोडी ->' : 'Circulars & Announcements ->'}</p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* 4. Navigation Tabs for Devotees */}
@@ -995,36 +983,6 @@ export default function PublicDevoteePortalView({ onOpenAdminLogin, onNavigateAd
           </div>
         </section>
       )}
-
-      {/* 8. Public Footer */}
-      <footer className="public-footer">
-        <div className="public-footer-inner">
-          <div className="footer-temple-brand">
-            <img src="/assets/ganesha_logo.png" alt="Logo" className="footer-logo" />
-            <div>
-              <div className="footer-title">{t('mandalName')}</div>
-              <div className="footer-sub">{t('mandalLocation')} • {t('regNo')}</div>
-            </div>
-          </div>
-
-          <div className="footer-admin-link">
-            {user ? (
-              <button className="btn-footer-admin" onClick={onNavigateAdmin}>
-                👑 {lang === 'mr' ? 'व्यवस्थापक डॅशबोर्ड' : 'Admin Dashboard'} &rarr;
-              </button>
-            ) : (
-              <button className="btn-footer-admin" onClick={onOpenAdminLogin}>
-                <Lock size={14} />
-                <span>{lang === 'mr' ? 'कार्यकर्ता / Admin लॉगिन' : 'Admin Login'}</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="footer-copyright">
-          ॥ गणपती बाप्पा मोरया, मंगलमूर्ती मोरया ॥ • © {new Date().getFullYear()} {t('mandalName')}
-        </div>
-      </footer>
 
       {/* 9. Official Receipt Certificate Modal */}
       {selectedReceipt && (

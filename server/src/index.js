@@ -14,8 +14,12 @@ import { getMembersAndLeaderboard, createMember, updateMember, deleteMember } fr
 import { getFinancialReports, exportReceiptsCSV, exportExpensesCSV } from './controllers/reportController.js';
 import { getAuditLogs } from './controllers/auditController.js';
 import { getUpiConfig, initiatePaymentIntent, submitUpiContribution, checkContributionStatus, listPendingContributions, listAllContributions, verifyContribution, rejectContribution } from './controllers/upiController.js';
-import { authenticateToken, requireAdmin, requireExpenseAuthority, requirePaymentStatusAuthority } from './middlewares/authMiddleware.js';
-import { upload } from './middlewares/uploadMiddleware.js';
+import { getPublicEvents, getEventBySlugOrId, registerForEvent, getMyRegistrations, adminListEvents, adminCreateEvent, adminUpdateEvent, adminDeleteEvent, adminListEventRegistrations } from './controllers/eventController.js';
+import { getPublicAnnouncements, adminListAnnouncements, adminCreateAnnouncement, adminUpdateAnnouncement, adminDeleteAnnouncement } from './controllers/announcementController.js';
+import { getPublicAlbums, getAlbumPhotos, adminCreateAlbum, adminUploadPhoto, adminDeletePhoto, adminDeleteAlbum } from './controllers/galleryController.js';
+import { getUserNotifications, markNotificationRead, markAllNotificationsRead } from './controllers/notificationController.js';
+import { authenticateToken, optionalAuth, requireAdmin, requireEventManager, requireContentManager, requireTreasurer, requireExpenseAuthority, requirePaymentStatusAuthority } from './middlewares/authMiddleware.js';
+import { upload, uploadPhoto } from './middlewares/uploadMiddleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,10 +58,26 @@ app.post('/api/public/donations', initiatePaymentIntent);
 app.post('/api/public/payments/utr', submitUpiContribution);
 app.get('/api/public/payment-status/:identifier', checkContributionStatus);
 
+// 0b. Public Events, Announcements, & Gallery
+app.get('/api/public/events', getPublicEvents);
+app.get('/api/public/events/my-registrations', optionalAuth, getMyRegistrations);
+app.post('/api/public/events/register', optionalAuth, registerForEvent);
+app.get('/api/public/events/:identifier', getEventBySlugOrId);
+
+app.get('/api/public/announcements', getPublicAnnouncements);
+app.get('/api/public/albums', getPublicAlbums);
+app.get('/api/public/albums/:identifier', getAlbumPhotos);
+
 // 1. Auth Routes
 app.post('/api/auth/login', login);
 app.get('/api/auth/me', authenticateToken, getCurrentUser);
 app.post('/api/auth/logout', authenticateToken, logout);
+
+// 1b. Devotee User Space
+app.get('/api/user/registrations', authenticateToken, getMyRegistrations);
+app.get('/api/notifications', optionalAuth, getUserNotifications);
+app.post('/api/notifications/:id/read', optionalAuth, markNotificationRead);
+app.post('/api/notifications/read-all', optionalAuth, markAllNotificationsRead);
 
 // 2. Dashboard Stats (Admin / Staff)
 app.get('/api/dashboard/stats', authenticateToken, getDashboardStats);
@@ -115,7 +135,26 @@ app.get('/api/upi/all', authenticateToken, listAllContributions);
 app.post('/api/upi/:id/verify', authenticateToken, requireAdmin, verifyContribution);
 app.post('/api/upi/:id/reject', authenticateToken, requireAdmin, rejectContribution);
 
-// 9. Health Check
+// 9. Admin Event Management Routes (Event Manager & Admin)
+app.get('/api/admin/events', authenticateToken, requireEventManager, adminListEvents);
+app.post('/api/admin/events', authenticateToken, requireEventManager, adminCreateEvent);
+app.put('/api/admin/events/:id', authenticateToken, requireEventManager, adminUpdateEvent);
+app.delete('/api/admin/events/:id', authenticateToken, requireEventManager, adminDeleteEvent);
+app.get('/api/admin/events/:event_id/registrations', authenticateToken, requireEventManager, adminListEventRegistrations);
+
+// 10. Admin Announcement Routes (Content Manager & Admin)
+app.get('/api/admin/announcements', authenticateToken, requireContentManager, adminListAnnouncements);
+app.post('/api/admin/announcements', authenticateToken, requireContentManager, adminCreateAnnouncement);
+app.put('/api/admin/announcements/:id', authenticateToken, requireContentManager, adminUpdateAnnouncement);
+app.delete('/api/admin/announcements/:id', authenticateToken, requireContentManager, adminDeleteAnnouncement);
+
+// 11. Admin Gallery Routes (Content Manager & Admin)
+app.post('/api/admin/albums', authenticateToken, requireContentManager, adminCreateAlbum);
+app.delete('/api/admin/albums/:id', authenticateToken, requireContentManager, adminDeleteAlbum);
+app.post('/api/admin/photos', authenticateToken, requireContentManager, uploadPhoto.single('photo'), adminUploadPhoto);
+app.delete('/api/admin/photos/:id', authenticateToken, requireContentManager, adminDeletePhoto);
+
+// 12. Health Check
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -124,6 +163,7 @@ app.get('/api/health', (req, res) => {
     mandal: process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर'
   });
 });
+
 
 
 // Resolve frontend static assets directory

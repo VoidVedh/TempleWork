@@ -1,6 +1,9 @@
 import React from 'react';
 import {
   LayoutDashboard,
+  Calendar,
+  Bell,
+  Image,
   FilePlus,
   Clock,
   TrendingDown,
@@ -9,28 +12,45 @@ import {
   ShieldCheck,
   QrCode,
   LogOut,
-  X
+  X,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function NavigationDrawer({ isOpen, onClose, currentView, onSelectView }) {
   const { user, logout } = useAuth();
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
 
   if (!isOpen) return null;
 
   const menuItems = [
     { id: 'dashboard', label: t('mainDashboard'), icon: LayoutDashboard },
-    { id: 'devotee_portal', label: '👁️ ' + (lang === 'mr' ? 'भक्त पोर्टल (Public View)' : 'Devotee Portal (Public)'), icon: QrCode },
-    { id: 'pay_vargani', label: t('payVargani'), icon: QrCode, hasBadge: true, badgeText: 'UPI' },
+    { 
+      id: 'admin_events', 
+      label: '🎪 ' + (lang === 'mr' ? 'कार्यक्रम व्यवस्थापन (Events)' : 'Event Management'), 
+      icon: Calendar,
+      roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'EVENT_MANAGER'
+    },
+    { 
+      id: 'admin_announcements', 
+      label: '📢 ' + (lang === 'mr' ? 'सूचना फलक (Notice Board)' : 'Notice Board Manager'), 
+      icon: Bell,
+      roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'CONTENT_MANAGER'
+    },
+    { 
+      id: 'admin_gallery', 
+      label: '🖼️ ' + (lang === 'mr' ? 'छायाचित्र दालन (Gallery)' : 'Gallery & Albums'), 
+      icon: Image,
+      roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'CONTENT_MANAGER'
+    },
     { id: 'new_receipt', label: t('newAddReceipt'), icon: FilePlus },
     { id: 'unpaid_receipts', label: t('unpaidReceipts'), icon: Clock },
     {
       id: 'expenses',
       label: t('expenseManager'),
       icon: TrendingDown,
-      roleRequired: (u) => u?.role === 'ADMIN' || u?.can_manage_expenses === 1
+      roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'TREASURER' || u?.can_manage_expenses === 1
     },
     {
       id: 'members',
@@ -42,13 +62,18 @@ export default function NavigationDrawer({ isOpen, onClose, currentView, onSelec
       id: 'reports',
       label: t('financialReports'),
       icon: BarChart3,
-      roleRequired: (u) => u?.role === 'ADMIN'
+      roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'TREASURER'
     },
     {
       id: 'audit',
       label: t('auditLog'),
       icon: ShieldCheck,
       roleRequired: (u) => u?.role === 'ADMIN'
+    },
+    { 
+      id: 'devotee_portal', 
+      label: '👁️ ' + (lang === 'mr' ? 'भाविक पोर्टल पहा (Devotee View)' : 'Devotee Portal View'), 
+      icon: ExternalLink 
     }
   ];
 
@@ -98,11 +123,6 @@ export default function NavigationDrawer({ isOpen, onClose, currentView, onSelec
                     <Icon size={18} />
                     <span>{item.label}</span>
                   </div>
-                  {item.hasBadge && (
-                    <span className="nav-new-badge" style={{ background: '#7f1d1d', color: '#fde047', border: '1px solid #d97706' }}>
-                      {item.badgeText || 'NEW'}
-                    </span>
-                  )}
                 </div>
               );
             })}
@@ -116,10 +136,10 @@ export default function NavigationDrawer({ isOpen, onClose, currentView, onSelec
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div className="drawer-user-name">
-                  {user.name} ({user.name_mr || user.name})
+                  {user.name_mr || user.name}
                 </div>
                 <div className="drawer-user-role">
-                  +91 {user.mobile} • {user.role === 'ADMIN' ? 'मुख्य अध्यक्ष' : 'कार्यकर्ता'}
+                  +91 {user.mobile} • {user.role}
                 </div>
               </div>
             </div>

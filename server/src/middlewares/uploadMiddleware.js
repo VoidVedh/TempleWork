@@ -35,8 +35,38 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+const photoStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname).toLowerCase().replace(/[^a-z0-9.]/g, '');
+    cb(null, 'media-' + uniqueSuffix + ext);
+  }
+});
+
+const imageOnlyFilter = (req, file, cb) => {
+  const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+  const allowedExts = ['.jpg', '.jpeg', '.png', '.webp'];
+  const ext = path.extname(file.originalname).toLowerCase();
+
+  if (allowedMimes.includes(file.mimetype) && allowedExts.includes(ext)) {
+    cb(null, true);
+  } else {
+    cb(new Error('फक्त JPG, PNG किंवा WEBP फोटो अपलोड करा (Only JPG, PNG, or WEBP images are allowed).'), false);
+  }
+};
+
 export const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 } // 5 MB max
 });
+
+export const uploadPhoto = multer({
+  storage: photoStorage,
+  fileFilter: imageOnlyFilter,
+  limits: { fileSize: 8 * 1024 * 1024 } // 8 MB max for high-res temple photography
+});
+
