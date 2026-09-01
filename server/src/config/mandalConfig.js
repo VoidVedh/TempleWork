@@ -7,7 +7,7 @@ export const MANDAL_CONFIG = {
   year: parseInt(process.env.MANDAL_YEAR || '2024', 10),
   
   // Official Centralized Mandal UPI Configuration
-  upiId: process.env.MANDAL_UPI_ID || 'ganjaleshivam720-1@oksbi',
+  upiId: process.env.MANDAL_UPI_ID || '9029359525m@pnb',
   payeeName: process.env.MANDAL_PAYEE_NAME || 'Shree Siddhivinayak Mandir',
   payeeNameMr: 'श्री सिद्धिविनायक मंदिर'
 };

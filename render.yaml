@@ -14,7 +14,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: MANDAL_UPI_ID
-        value: ganjaleshivam720-1@oksbi
+        value: 9029359525m@pnb
       - key: MANDAL_PAYEE_NAME
         value: Shree Siddhivinayak Mandir
       - key: UPLOAD_DIR

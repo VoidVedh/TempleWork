@@ -1,5 +1,5 @@
 export const MANDAL_UPI_CONFIG = {
-  upiId: 'ganjaleshivam720-1@oksbi',
+  upiId: '9029359525m@pnb',
   payeeName: 'Shree Siddhivinayak Mandir',
   payeeNameMr: 'श्री सिद्धिविनायक मंदिर',
   mandalLocation: 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८'

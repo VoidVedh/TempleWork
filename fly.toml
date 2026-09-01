@@ -7,7 +7,7 @@ primary_region = "bom" # Mumbai, India
 [env]
   NODE_ENV = "production"
   PORT = "5001"
-  MANDAL_UPI_ID = "ganjaleshivam720-1@oksbi"
+  MANDAL_UPI_ID = "9029359525m@pnb"
   MANDAL_PAYEE_NAME = "Shree Siddhivinayak Mandir"
 
 [http_service]
