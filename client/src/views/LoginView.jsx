@@ -56,7 +56,7 @@ export default function LoginView({ onBackToPublic, isModal, onClose }) {
           </div>
 
           <div className="deity-circle-wrap">
-            <img src="/assets/shivaji_maharaj.png" alt="छ. शिवाजी महाराज" className="deity-circle-img" />
+            <img src="/assets/shivaji_portrait.png" alt="छ. शिवाजी महाराज" className="deity-circle-img" />
             <span className="deity-label">छ. शिवाजी महाराज</span>
           </div>
         </div>

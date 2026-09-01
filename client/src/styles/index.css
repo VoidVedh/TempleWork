@@ -41,6 +41,7 @@
   --status-blue-text: #3730a3;
 
   /* Gradients */
+  --grad-maroon-dark: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #580a0e 100%);
   --grad-hero-maroon: linear-gradient(135deg, #5c0a0e 0%, #350507 100%);
   --grad-hero-green: linear-gradient(135deg, #064e3b 0%, #022c22 100%);
   --grad-hero-saffron: linear-gradient(135deg, #7c2d12 0%, #431407 100%);
@@ -1614,18 +1615,45 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-bottom: 12px;
+  gap: 28px;
+  margin-bottom: 18px;
+}
+
+.hero-deity-card-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .hero-deity-avatar {
-  width: 58px;
-  height: 58px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
-  border: 2px solid var(--sacred-gold);
+  border: 3px solid #f59e0b;
   background-color: #ffffff;
-  padding: 2px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 3px;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(245, 158, 11, 0.45);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.hero-deity-avatar:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 22px rgba(245, 158, 11, 0.6);
+}
+
+.hero-deity-title-tag {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #fef08a;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
 }
 
 .hero-temple-heading {

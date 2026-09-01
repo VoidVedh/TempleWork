@@ -322,8 +322,14 @@ export default function PublicDevoteePortalView({
 
         <div className="hero-temple-intro">
           <div className="hero-deities-wrap">
-            <img src="/assets/ganesha_logo.png" alt="Shree Siddhivinayak" className="hero-deity-avatar" />
-            <img src="/assets/shivaji_maharaj.png" alt="Chhatrapati Shivaji Maharaj" className="hero-deity-avatar shivaji" />
+            <div className="hero-deity-card-item">
+              <img src="/assets/ganesha_logo.png" alt="श्री सिद्धिविनायक" className="hero-deity-avatar" />
+              <span className="hero-deity-title-tag">{lang === 'mr' ? '॥ श्री सिद्धिविनायक ॥' : 'Shree Siddhivinayak'}</span>
+            </div>
+            <div className="hero-deity-card-item">
+              <img src="/assets/shivaji_portrait.png" alt="छत्रपती शिवाजी महाराज" className="hero-deity-avatar shivaji" />
+              <span className="hero-deity-title-tag">{lang === 'mr' ? '॥ छ. शिवाजी महाराज ॥' : 'Chh. Shivaji Maharaj'}</span>
+            </div>
           </div>
 
           <h1 className="hero-temple-heading">
