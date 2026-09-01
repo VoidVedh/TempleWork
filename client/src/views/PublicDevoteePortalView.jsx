@@ -52,9 +52,7 @@ const CONTRIBUTION_CATEGORIES = [
 export default function PublicDevoteePortalView({ 
   onOpenAdminLogin, 
   onNavigateAdmin,
-  onNavigateEvents,
-  onNavigateAnnouncements,
-  onNavigateAbout,
+  onNavigatePayVargani,
   onNavigateContact
 }) {
   const { t, lang, changeLanguage } = useLanguage();
@@ -427,24 +425,6 @@ export default function PublicDevoteePortalView({
             })}
           </div>
         )}
-        {/* Quick Portal Navigation Cards */}
-        <div className="quick-portal-shortcuts-grid mb-6">
-          <div className="shortcut-card" onClick={onNavigateEvents}>
-            <div className="shortcut-icon-box gold">🎪</div>
-            <div className="shortcut-text">
-              <h4>{lang === 'mr' ? 'उत्सव व कार्यक्रम' : 'Events & Utsav'}</h4>
-              <p>{lang === 'mr' ? 'आगामी पूजा, महाआरती व मोफत नोंदणी ->' : 'Upcoming Pujas & Event Pass ->'}</p>
-            </div>
-          </div>
-
-          <div className="shortcut-card" onClick={onNavigateAnnouncements}>
-            <div className="shortcut-icon-box orange">📢</div>
-            <div className="shortcut-text">
-              <h4>{lang === 'mr' ? 'सूचना फलक' : 'Notice Board'}</h4>
-              <p>{lang === 'mr' ? 'अधिकृत परिपत्रक व ताज्या घडामोडी ->' : 'Circulars & Announcements ->'}</p>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* 4. Navigation Tabs for Devotees */}

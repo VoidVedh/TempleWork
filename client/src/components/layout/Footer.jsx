@@ -33,10 +33,7 @@ export default function Footer({ onSelectView, onOpenAdminLogin }) {
           <h4 className="footer-section-title">{lang === 'mr' ? 'महत्त्वाचे दुवे' : 'Quick Links'}</h4>
           <ul className="footer-links-list">
             <li><button onClick={() => onSelectView('devotee_portal')}>{t('navHome')}</button></li>
-            <li><button onClick={() => onSelectView('events')}>{t('navEvents')}</button></li>
-            <li><button onClick={() => onSelectView('announcements')}>{t('navAnnouncements')}</button></li>
             <li><button onClick={() => onSelectView('pay_vargani')}>{t('navContribute')}</button></li>
-            <li><button onClick={() => onSelectView('about')}>{t('navAbout')}</button></li>
             <li><button onClick={() => onSelectView('contact')}>{t('navContact')}</button></li>
           </ul>
         </div>

@@ -26,18 +26,6 @@ export default function NavigationDrawer({ isOpen, onClose, currentView, onSelec
 
   const menuItems = [
     { id: 'dashboard', label: t('mainDashboard'), icon: LayoutDashboard },
-    { 
-      id: 'admin_events', 
-      label: '🎪 ' + (lang === 'mr' ? 'कार्यक्रम व्यवस्थापन (Events)' : 'Event Management'), 
-      icon: Calendar,
-      roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'EVENT_MANAGER'
-    },
-    { 
-      id: 'admin_announcements', 
-      label: '📢 ' + (lang === 'mr' ? 'सूचना फलक (Notice Board)' : 'Notice Board Manager'), 
-      icon: Bell,
-      roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'CONTENT_MANAGER'
-    },
     { id: 'new_receipt', label: t('newAddReceipt'), icon: FilePlus },
     { id: 'unpaid_receipts', label: t('unpaidReceipts'), icon: Clock },
     {

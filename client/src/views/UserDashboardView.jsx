@@ -8,12 +8,11 @@ import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../utils/api';
 import ReceiptCertificateModal from '../components/receipts/ReceiptCertificateModal';
 
-export default function UserDashboardView({ onNavigateToContribute, onNavigateToEvents, onLogout }) {
+export default function UserDashboardView({ onNavigateToContribute, onLogout }) {
   const { lang, t } = useLanguage();
   const { user } = useAuth();
 
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'events' | 'receipts' | 'notifications'
-  const [registrations, setRegistrations] = useState([]);
+  const [activeTab, setActiveTab] = useState('receipts'); // 'receipts' | 'notifications'
   const [userReceipts, setUserReceipts] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,10 +29,6 @@ export default function UserDashboardView({ onNavigateToContribute, onNavigateTo
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      // Fetch registrations for user mobile
-      const regRes = await apiRequest(`/public/events/my-registrations?mobile=${user.mobile || ''}`);
-      setRegistrations(regRes.registrations || []);
-
       // Fetch user receipts if authenticated
       try {
         const rcptRes = await apiRequest('/receipts?limit=50');
@@ -96,11 +91,6 @@ export default function UserDashboardView({ onNavigateToContribute, onNavigateTo
         </div>
 
         <div className="user-quick-stats">
-          <div className="quick-stat-box" onClick={() => setActiveTab('events')}>
-            <span className="stat-count">{registrations.length}</span>
-            <span className="stat-lbl">{lang === 'mr' ? 'नोंदणीकृत कार्यक्रम' : 'Events'}</span>
-          </div>
-
           <div className="quick-stat-box" onClick={() => setActiveTab('receipts')}>
             <span className="stat-count">{userReceipts.length}</span>
             <span className="stat-lbl">{lang === 'mr' ? 'पावत्या' : 'Receipts'}</span>
@@ -116,8 +106,6 @@ export default function UserDashboardView({ onNavigateToContribute, onNavigateTo
       {/* Tabs Navigation */}
       <div className="user-tabs-bar">
         {[
-          { key: 'overview', label: t('myOverview'), icon: User },
-          { key: 'events', label: t('myRegistrations'), icon: Calendar, count: registrations.length },
           { key: 'receipts', label: t('myContributions'), icon: Receipt, count: userReceipts.length },
           { key: 'notifications', label: t('myNotifications'), icon: Bell, count: unreadCount }
         ].map(tab => {

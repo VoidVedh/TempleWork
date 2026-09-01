@@ -9,9 +9,6 @@ import AppHeader from './components/layout/AppHeader';
 import NavigationDrawer from './components/layout/NavigationDrawer';
 
 import PublicDevoteePortalView from './views/PublicDevoteePortalView';
-import EventsView from './views/EventsView';
-import AnnouncementsView from './views/AnnouncementsView';
-import AboutView from './views/AboutView';
 import ContactView from './views/ContactView';
 import PayVarganiView from './views/PayVarganiView';
 import UserDashboardView from './views/UserDashboardView';
@@ -19,8 +16,6 @@ import LoginView from './views/LoginView';
 
 // Admin Suite Views
 import DashboardView from './views/DashboardView';
-import AdminEventManagerView from './views/AdminEventManagerView';
-import AdminAnnouncementManagerView from './views/AdminAnnouncementManagerView';
 import NewReceiptView from './views/NewReceiptView';
 import UnpaidReceiptsView from './views/UnpaidReceiptsView';
 import ExpenseManagerView from './views/ExpenseManagerView';
@@ -28,7 +23,7 @@ import MemberPerformanceView from './views/MemberPerformanceView';
 import ReportsView from './views/ReportsView';
 import AuditLogView from './views/AuditLogView';
 
-const PUBLIC_VIEWS = ['devotee_portal', 'events', 'announcements', 'pay_vargani', 'about', 'contact'];
+const PUBLIC_VIEWS = ['devotee_portal', 'pay_vargani', 'contact'];
 
 function MainApp() {
   const { user, loading, logout } = useAuth();
@@ -93,36 +88,14 @@ function MainApp() {
             <PublicDevoteePortalView
               onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
               onNavigateAdmin={() => navigateTo('dashboard')}
-              onNavigateEvents={() => navigateTo('events')}
-              onNavigateGallery={() => navigateTo('gallery')}
-              onNavigateAnnouncements={() => navigateTo('announcements')}
-              onNavigateAbout={() => navigateTo('about')}
+              onNavigatePayVargani={() => navigateTo('pay_vargani')}
               onNavigateContact={() => navigateTo('contact')}
-            />
-          )}
-
-          {currentView === 'events' && (
-            <EventsView
-              onNavigateToContribute={() => navigateTo('pay_vargani')}
-              onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
-            />
-          )}
-
-          {currentView === 'announcements' && (
-            <AnnouncementsView
-              onNavigateToEvents={() => navigateTo('events')}
             />
           )}
 
           {currentView === 'pay_vargani' && (
             <PayVarganiView
               onNavigate={navigateTo}
-            />
-          )}
-
-          {currentView === 'about' && (
-            <AboutView
-              onNavigateToContribute={() => navigateTo('pay_vargani')}
             />
           )}
 
@@ -160,7 +133,6 @@ function MainApp() {
         <main className="public-main-content">
           <UserDashboardView
             onNavigateToContribute={() => navigateTo('pay_vargani')}
-            onNavigateToEvents={() => navigateTo('events')}
             onLogout={logout}
           />
         </main>
@@ -177,10 +149,6 @@ function MainApp() {
   const canAccessAdmin = (view) => {
     if (!user) return false;
     switch (view) {
-      case 'admin_events':
-        return user.role === 'ADMIN' || user.role === 'EVENT_MANAGER';
-      case 'admin_announcements':
-        return user.role === 'ADMIN' || user.role === 'CONTENT_MANAGER';
       case 'expenses':
         return user.role === 'ADMIN' || user.role === 'TREASURER' || user.can_manage_expenses === 1;
       case 'members':
@@ -198,10 +166,6 @@ function MainApp() {
     switch (effectiveView) {
       case 'dashboard':
         return <DashboardView onNavigate={navigateTo} />;
-      case 'admin_events':
-        return <AdminEventManagerView />;
-      case 'admin_announcements':
-        return <AdminAnnouncementManagerView />;
       case 'pay_vargani':
         return <PayVarganiView onNavigate={navigateTo} />;
       case 'new_receipt':
