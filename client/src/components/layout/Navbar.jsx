@@ -35,7 +35,6 @@ export default function Navbar({
   const navLinks = [
     { key: 'devotee_portal', label: t('navHome'), icon: Heart },
     { key: 'events', label: t('navEvents'), icon: Calendar },
-    { key: 'gallery', label: t('navGallery'), icon: Image },
     { key: 'announcements', label: t('navAnnouncements'), icon: Bell },
     { key: 'pay_vargani', label: t('navContribute'), icon: Heart, highlight: true },
     { key: 'about', label: t('navAbout'), icon: Info },

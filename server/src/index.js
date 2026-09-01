@@ -16,7 +16,6 @@ import { getAuditLogs } from './controllers/auditController.js';
 import { getUpiConfig, initiatePaymentIntent, submitUpiContribution, checkContributionStatus, listPendingContributions, listAllContributions, verifyContribution, rejectContribution } from './controllers/upiController.js';
 import { getPublicEvents, getEventBySlugOrId, registerForEvent, getMyRegistrations, adminListEvents, adminCreateEvent, adminUpdateEvent, adminDeleteEvent, adminListEventRegistrations } from './controllers/eventController.js';
 import { getPublicAnnouncements, adminListAnnouncements, adminCreateAnnouncement, adminUpdateAnnouncement, adminDeleteAnnouncement } from './controllers/announcementController.js';
-import { getPublicAlbums, getAlbumPhotos, adminCreateAlbum, adminUploadPhoto, adminDeletePhoto, adminDeleteAlbum } from './controllers/galleryController.js';
 import { getUserNotifications, markNotificationRead, markAllNotificationsRead } from './controllers/notificationController.js';
 import { authenticateToken, optionalAuth, requireAdmin, requireEventManager, requireContentManager, requireTreasurer, requireExpenseAuthority, requirePaymentStatusAuthority } from './middlewares/authMiddleware.js';
 import { upload, uploadPhoto } from './middlewares/uploadMiddleware.js';
@@ -58,15 +57,13 @@ app.post('/api/public/donations', initiatePaymentIntent);
 app.post('/api/public/payments/utr', submitUpiContribution);
 app.get('/api/public/payment-status/:identifier', checkContributionStatus);
 
-// 0b. Public Events, Announcements, & Gallery
+// 0b. Public Events & Announcements
 app.get('/api/public/events', getPublicEvents);
 app.get('/api/public/events/my-registrations', optionalAuth, getMyRegistrations);
 app.post('/api/public/events/register', optionalAuth, registerForEvent);
 app.get('/api/public/events/:identifier', getEventBySlugOrId);
 
 app.get('/api/public/announcements', getPublicAnnouncements);
-app.get('/api/public/albums', getPublicAlbums);
-app.get('/api/public/albums/:identifier', getAlbumPhotos);
 
 // 1. Auth Routes
 app.post('/api/auth/login', login);
@@ -148,13 +145,7 @@ app.post('/api/admin/announcements', authenticateToken, requireContentManager, a
 app.put('/api/admin/announcements/:id', authenticateToken, requireContentManager, adminUpdateAnnouncement);
 app.delete('/api/admin/announcements/:id', authenticateToken, requireContentManager, adminDeleteAnnouncement);
 
-// 11. Admin Gallery Routes (Content Manager & Admin)
-app.post('/api/admin/albums', authenticateToken, requireContentManager, adminCreateAlbum);
-app.delete('/api/admin/albums/:id', authenticateToken, requireContentManager, adminDeleteAlbum);
-app.post('/api/admin/photos', authenticateToken, requireContentManager, uploadPhoto.single('photo'), adminUploadPhoto);
-app.delete('/api/admin/photos/:id', authenticateToken, requireContentManager, adminDeletePhoto);
-
-// 12. Health Check
+// 11. Health Check
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',

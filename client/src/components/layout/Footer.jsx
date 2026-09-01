@@ -34,7 +34,6 @@ export default function Footer({ onSelectView, onOpenAdminLogin }) {
           <ul className="footer-links-list">
             <li><button onClick={() => onSelectView('devotee_portal')}>{t('navHome')}</button></li>
             <li><button onClick={() => onSelectView('events')}>{t('navEvents')}</button></li>
-            <li><button onClick={() => onSelectView('gallery')}>{t('navGallery')}</button></li>
             <li><button onClick={() => onSelectView('announcements')}>{t('navAnnouncements')}</button></li>
             <li><button onClick={() => onSelectView('pay_vargani')}>{t('navContribute')}</button></li>
             <li><button onClick={() => onSelectView('about')}>{t('navAbout')}</button></li>

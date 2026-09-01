@@ -38,12 +38,6 @@ export default function NavigationDrawer({ isOpen, onClose, currentView, onSelec
       icon: Bell,
       roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'CONTENT_MANAGER'
     },
-    { 
-      id: 'admin_gallery', 
-      label: '🖼️ ' + (lang === 'mr' ? 'छायाचित्र दालन (Gallery)' : 'Gallery & Albums'), 
-      icon: Image,
-      roleRequired: (u) => u?.role === 'ADMIN' || u?.role === 'CONTENT_MANAGER'
-    },
     { id: 'new_receipt', label: t('newAddReceipt'), icon: FilePlus },
     { id: 'unpaid_receipts', label: t('unpaidReceipts'), icon: Clock },
     {

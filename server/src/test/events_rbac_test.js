@@ -76,29 +76,6 @@ assert.strictEqual(activeIds.includes('ann-exp-1'), false, 'Expired announcement
 assert.strictEqual(activeIds.includes('ann-act-1'), true, 'Active announcement must be included');
 console.log('  ✅ TEST 3 PASSED: Auto-expiry filter correctly excludes past-expiry items');
 
-// 4. Test Gallery Album Cascade
-console.log('\n▶ TEST 4: Gallery Album & Photo Cascade');
-const testAlbId = 'test-alb-' + Date.now();
-db.prepare(`
-  INSERT INTO albums (id, slug, title_en, title_mr, title_hi, category)
-  VALUES (?, ?, 'Test Album', 'चाचणी अल्बम', 'परीक्षण एल्बम', 'FESTIVAL')
-`).run(testAlbId, 'test-alb-' + Date.now());
-
-db.prepare(`
-  INSERT INTO gallery_photos (id, album_id, title_en, image_url)
-  VALUES ('pho-test-1', ?, 'Photo 1', '/uploads/test1.jpg')
-`).run(testAlbId);
-
-const photosBefore = db.prepare('SELECT COUNT(*) as count FROM gallery_photos WHERE album_id = ?').get(testAlbId);
-assert.strictEqual(photosBefore.count, 1);
-
-// Delete album and verify photos deletion
-db.prepare('DELETE FROM gallery_photos WHERE album_id = ?').run(testAlbId);
-db.prepare('DELETE FROM albums WHERE id = ?').run(testAlbId);
-const photosAfter = db.prepare('SELECT COUNT(*) as count FROM gallery_photos WHERE album_id = ?').get(testAlbId);
-assert.strictEqual(photosAfter.count, 0);
-console.log('  ✅ TEST 4 PASSED: Album deletion cleanly removes all linked photos');
-
 // Cleanup test records
 db.prepare('DELETE FROM event_registrations WHERE event_id = ?').run(testEventId);
 db.prepare('DELETE FROM events WHERE id = ?').run(testEventId);

@@ -10,7 +10,6 @@ import NavigationDrawer from './components/layout/NavigationDrawer';
 
 import PublicDevoteePortalView from './views/PublicDevoteePortalView';
 import EventsView from './views/EventsView';
-import GalleryView from './views/GalleryView';
 import AnnouncementsView from './views/AnnouncementsView';
 import AboutView from './views/AboutView';
 import ContactView from './views/ContactView';
@@ -22,7 +21,6 @@ import LoginView from './views/LoginView';
 import DashboardView from './views/DashboardView';
 import AdminEventManagerView from './views/AdminEventManagerView';
 import AdminAnnouncementManagerView from './views/AdminAnnouncementManagerView';
-import AdminGalleryManagerView from './views/AdminGalleryManagerView';
 import NewReceiptView from './views/NewReceiptView';
 import UnpaidReceiptsView from './views/UnpaidReceiptsView';
 import ExpenseManagerView from './views/ExpenseManagerView';
@@ -30,7 +28,7 @@ import MemberPerformanceView from './views/MemberPerformanceView';
 import ReportsView from './views/ReportsView';
 import AuditLogView from './views/AuditLogView';
 
-const PUBLIC_VIEWS = ['devotee_portal', 'events', 'gallery', 'announcements', 'pay_vargani', 'about', 'contact'];
+const PUBLIC_VIEWS = ['devotee_portal', 'events', 'announcements', 'pay_vargani', 'about', 'contact'];
 
 function MainApp() {
   const { user, loading, logout } = useAuth();
@@ -110,8 +108,6 @@ function MainApp() {
             />
           )}
 
-          {currentView === 'gallery' && <GalleryView />}
-
           {currentView === 'announcements' && (
             <AnnouncementsView
               onNavigateToEvents={() => navigateTo('events')}
@@ -184,7 +180,6 @@ function MainApp() {
       case 'admin_events':
         return user.role === 'ADMIN' || user.role === 'EVENT_MANAGER';
       case 'admin_announcements':
-      case 'admin_gallery':
         return user.role === 'ADMIN' || user.role === 'CONTENT_MANAGER';
       case 'expenses':
         return user.role === 'ADMIN' || user.role === 'TREASURER' || user.can_manage_expenses === 1;
@@ -207,8 +202,6 @@ function MainApp() {
         return <AdminEventManagerView />;
       case 'admin_announcements':
         return <AdminAnnouncementManagerView />;
-      case 'admin_gallery':
-        return <AdminGalleryManagerView />;
       case 'pay_vargani':
         return <PayVarganiView onNavigate={navigateTo} />;
       case 'new_receipt':

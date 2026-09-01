@@ -53,7 +53,6 @@ export default function PublicDevoteePortalView({
   onOpenAdminLogin, 
   onNavigateAdmin,
   onNavigateEvents,
-  onNavigateGallery,
   onNavigateAnnouncements,
   onNavigateAbout,
   onNavigateContact
@@ -435,14 +434,6 @@ export default function PublicDevoteePortalView({
             <div className="shortcut-text">
               <h4>{lang === 'mr' ? 'उत्सव व कार्यक्रम' : 'Events & Utsav'}</h4>
               <p>{lang === 'mr' ? 'आगामी पूजा, महाआरती व मोफत नोंदणी ->' : 'Upcoming Pujas & Event Pass ->'}</p>
-            </div>
-          </div>
-
-          <div className="shortcut-card" onClick={onNavigateGallery}>
-            <div className="shortcut-icon-box crimson">📸</div>
-            <div className="shortcut-text">
-              <h4>{lang === 'mr' ? 'छायाचित्र दालन' : 'Photo Gallery'}</h4>
-              <p>{lang === 'mr' ? 'गणेशोत्सव व महाप्रसाद दर्शन ->' : 'HD Darshan & Celebrations ->'}</p>
             </div>
           </div>
 
