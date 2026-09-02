@@ -39,19 +39,21 @@ export function ensureCleanProductionDatabase() {
   // 2. Ensure ONLY the legitimate Founder Administrator account exists if no users exist
   const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get();
   if (userCount.count === 0) {
-    const adminMobile = process.env.ADMIN_MOBILE || '8149793310';
-    const adminPass = process.env.ADMIN_INITIAL_PASSWORD || 'Anand@8149';
+    const adminMobile = process.env.ADMIN_MOBILE || '9987942399';
+    const adminUsername = process.env.ADMIN_USERNAME || '9987942399';
+    const adminPass = process.env.ADMIN_INITIAL_PASSWORD || 'ShivamVedhSoham';
     const passwordHash = bcrypt.hashSync(adminPass, 10);
 
     const userStmt = db.prepare(`
-      INSERT INTO users (id, name, name_mr, mobile, password_hash, role, can_change_payment_status, can_manage_expenses, is_active, is_protected_founder, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO users (id, username, name, name_mr, mobile, password_hash, role, can_change_payment_status, can_manage_expenses, is_active, is_protected_founder, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     userStmt.run(
       'user-founder-admin',
-      process.env.ADMIN_NAME_EN || 'Anand Naik',
-      process.env.ADMIN_NAME_MR || 'आनंद नाईक - मुख्य अध्यक्ष',
+      adminUsername,
+      process.env.ADMIN_NAME_EN || 'Shivam',
+      process.env.ADMIN_NAME_MR || 'शिवम - मुख्य व्यवस्थापक',
       adminMobile,
       passwordHash,
       'ADMIN',

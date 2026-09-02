@@ -529,24 +529,32 @@ export function initDatabase() {
       db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username);`);
     }
 
-    // Ensure Shivam Admin user exists with password MoryaGanpati
+    // Ensure Admin user exists with username/mobile 9987942399 and password ShivamVedhSoham
     try {
-      const shivamHash = bcrypt.hashSync('MoryaGanpati', 10);
-      const existingUser = db.prepare("SELECT * FROM users WHERE LOWER(username) = 'shivam' OR LOWER(name) = 'shivam' OR mobile = '8149793310'").get();
+      const adminPass = process.env.ADMIN_INITIAL_PASSWORD || 'ShivamVedhSoham';
+      const adminMobile = process.env.ADMIN_MOBILE || '9987942399';
+      const adminUsername = process.env.ADMIN_USERNAME || '9987942399';
+      const adminHash = bcrypt.hashSync(adminPass, 10);
+      
+      const existingUser = db.prepare(`
+        SELECT * FROM users 
+        WHERE mobile = ? OR mobile = '8149793310' OR username = ? OR username = 'Shivam' OR LOWER(name) = 'shivam'
+      `).get(adminMobile, adminUsername);
+
       if (existingUser) {
         db.prepare(`
           UPDATE users 
-          SET username = 'Shivam', name = 'Shivam', name_mr = 'शिवम - व्यवस्थापक', password_hash = ?, role = 'ADMIN', can_change_payment_status = 1, can_manage_expenses = 1, is_active = 1
+          SET username = ?, mobile = ?, name = 'Shivam', name_mr = 'शिवम - मुख्य व्यवस्थापक', password_hash = ?, role = 'ADMIN', can_change_payment_status = 1, can_manage_expenses = 1, is_active = 1
           WHERE id = ?
-        `).run(shivamHash, existingUser.id);
+        `).run(adminUsername, adminMobile, adminHash, existingUser.id);
       } else {
         db.prepare(`
           INSERT INTO users (id, username, name, name_mr, mobile, password_hash, role, can_change_payment_status, can_manage_expenses, is_active, is_protected_founder)
-          VALUES ('user-shivam-admin', 'Shivam', 'Shivam', 'शिवम - व्यवस्थापक', '8149793310', ?, 'ADMIN', 1, 1, 1, 1)
-        `).run(shivamHash);
+          VALUES ('user-admin-9987942399', ?, 'Shivam', 'शिवम - मुख्य व्यवस्थापक', ?, ?, 'ADMIN', 1, 1, 1, 1)
+        `).run(adminUsername, adminMobile, adminHash);
       }
     } catch (errUser) {
-      console.error('Shivam user initialization note:', errUser.message);
+      console.error('Admin user initialization note:', errUser.message);
     }
 
     // 2. upi_contributions migrations
