@@ -68,8 +68,8 @@ export function initiatePaymentIntent(req, res) {
     const stmt = db.prepare(`
       INSERT INTO upi_contributions (
         id, intent_ref, donor_name, donor_mobile, amount,
-        payment_app, verification_status, notes, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, 'INITIATED', ?, CURRENT_TIMESTAMP)
+        upi_ref_no, payment_app, verification_status, notes, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, 'INITIATED', ?, CURRENT_TIMESTAMP)
     `);
 
     stmt.run(
@@ -78,6 +78,7 @@ export function initiatePaymentIntent(req, res) {
       cleanName,
       cleanMobile,
       numAmount,
+      intent_ref,
       payment_app || 'UPI',
       notes ? notes.trim() : ''
     );

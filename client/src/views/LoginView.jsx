@@ -7,7 +7,7 @@ export default function LoginView({ onBackToPublic, isModal, onClose }) {
   const { login } = useAuth();
   const { t, lang } = useLanguage();
 
-  const [mobile, setMobile] = useState('');
+  const [usernameOrMobile, setUsernameOrMobile] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -15,15 +15,15 @@ export default function LoginView({ onBackToPublic, isModal, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!mobile || !password) {
-      setError(lang === 'mr' ? 'कृपया मोबाईल नंबर व पासवर्ड टाका.' : 'Please enter mobile number and password.');
+    if (!usernameOrMobile.trim() || !password) {
+      setError(lang === 'mr' ? 'कृपया वापरकर्ता नाव/मोबाईल आणि पासवर्ड टाका.' : 'Please enter username/mobile and password.');
       return;
     }
 
     try {
       setSubmitting(true);
       setError('');
-      await login(mobile, password);
+      await login(usernameOrMobile.trim(), password);
       if (onClose) onClose();
     } catch (err) {
       console.error('Login error:', err);
@@ -65,7 +65,7 @@ export default function LoginView({ onBackToPublic, isModal, onClose }) {
       {/* Login Form Body */}
       <div className="login-form-body">
         <h2 className="login-form-title">{lang === 'mr' ? 'मंडळ व्यवस्थापन व कार्यकर्ता लॉगिन' : 'Temple Committee & Staff Login'}</h2>
-        <p className="login-form-sub">{lang === 'mr' ? 'नोंदणीकृत मोबाईल नंबर व पासवर्ड वापरून प्रवेश करा' : 'Enter your authorized mobile number and password'}</p>
+        <p className="login-form-sub">{lang === 'mr' ? 'वापरकर्ता नाव (Username) किंवा मोबाईल नंबर व पासवर्ड वापरा' : 'Enter your username or mobile number and password'}</p>
 
         {error && (
           <div style={{ backgroundColor: '#fee2e2', color: '#b91c1c', padding: '8px 12px', borderRadius: '8px', fontSize: '11.5px', marginBottom: '14px', fontWeight: 800, border: '1px solid #fecdd3' }}>
@@ -74,22 +74,23 @@ export default function LoginView({ onBackToPublic, isModal, onClose }) {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Mobile Number Input */}
+          {/* Username / Mobile Number Input */}
           <div className="form-group">
-            <label className="form-label">{lang === 'mr' ? 'नोंदणीकृत मोबाईल नंबर (LOGIN ID)' : 'Registered Mobile Number (LOGIN ID)'}</label>
+            <label className="form-label">{lang === 'mr' ? 'वापरकर्ता नाव किंवा मोबाईल (USERNAME / MOBILE)' : 'Username or Mobile Number (LOGIN ID)'}</label>
             <div className="input-wrapper">
               <span className="input-icon">
                 <Phone size={16} />
               </span>
               <input
-                type="tel"
-                maxLength={10}
+                type="text"
                 className="form-input"
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
-                placeholder="उदा. 8149793310"
+                value={usernameOrMobile}
+                onChange={(e) => setUsernameOrMobile(e.target.value)}
+                placeholder={lang === 'mr' ? 'उदा. Shivam किंवा 8149793310' : 'e.g. Shivam or 8149793310'}
                 required
                 id="input-login-mobile"
+                autoCapitalize="none"
+                autoComplete="username"
               />
             </div>
           </div>

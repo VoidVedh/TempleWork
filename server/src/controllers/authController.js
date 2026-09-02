@@ -6,21 +6,26 @@ import { logAuditEvent } from '../utils/auditLogger.js';
 
 export async function login(req, res) {
   try {
-    const { mobile, password } = req.body;
+    const { mobile, username, uname, loginId, password } = req.body;
+    const identifier = (username || uname || loginId || mobile || '').trim();
 
-    if (!mobile || !password) {
-      return res.status(400).json({ error: 'Mobile number and password are required.' });
+    if (!identifier || !password) {
+      return res.status(400).json({ error: 'Username/Mobile number and password are required.' });
     }
 
-    const cleanMobile = mobile.trim();
-    const user = db.prepare('SELECT * FROM users WHERE mobile = ?').get(cleanMobile);
+    const user = db.prepare(`
+      SELECT * FROM users 
+      WHERE LOWER(mobile) = LOWER(?) 
+         OR (username IS NOT NULL AND LOWER(username) = LOWER(?))
+         OR LOWER(name) = LOWER(?)
+    `).get(identifier, identifier, identifier);
 
     if (!user) {
-      return res.status(401).json({ error: 'नोंदणीकृत मोबाईल नंबर सापडला नाही (Invalid Mobile Number)' });
+      return res.status(401).json({ error: 'वापरकर्ता नाव किंवा मोबाईल नंबर सापडला नाही (Invalid Username or Mobile)' });
     }
 
     if (!user.is_active) {
-      return res.status(403).json({ error: 'हे खाते निष्क्रिय आहे. कृपया अध्यक्षांशी संपर्क साधा.' });
+      return res.status(403).json({ error: 'हे खाते निष्क्रिय आहे. कृपया व्यवस्थापकाशी संपर्क साधा.' });
     }
 
     const passwordMatches = await bcrypt.compare(password, user.password_hash);
@@ -29,13 +34,14 @@ export async function login(req, res) {
     }
 
     const token = jwt.sign(
-      { id: user.id, mobile: user.mobile, role: user.role },
+      { id: user.id, mobile: user.mobile, username: user.username, role: user.role },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
 
     const safeUser = {
       id: user.id,
+      username: user.username || user.name,
       name: user.name,
       name_mr: user.name_mr,
       mobile: user.mobile,

@@ -37,10 +37,15 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('auth_unauthorized', handleUnauthorized);
   }, []);
 
-  const login = async (mobile, password) => {
+  const login = async (identifier, password) => {
     const res = await apiRequest('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ mobile, password })
+      body: JSON.stringify({ 
+        username: identifier, 
+        mobile: identifier, 
+        loginId: identifier,
+        password 
+      })
     });
     localStorage.setItem('ekdant_auth_token', res.token);
     localStorage.setItem('ekdant_user', JSON.stringify(res.user));

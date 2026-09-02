@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+import bcrypt from 'bcryptjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -23,6 +24,7 @@ export function initDatabase() {
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
+      username TEXT,
       name TEXT NOT NULL,
       name_mr TEXT NOT NULL,
       mobile TEXT UNIQUE NOT NULL,
@@ -521,6 +523,30 @@ export function initDatabase() {
     const userCols = db.prepare(`PRAGMA table_info(users)`).all().map(c => c.name);
     if (!userCols.includes('email')) {
       db.exec(`ALTER TABLE users ADD COLUMN email TEXT;`);
+    }
+    if (!userCols.includes('username')) {
+      db.exec(`ALTER TABLE users ADD COLUMN username TEXT;`);
+      db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username);`);
+    }
+
+    // Ensure Shivam Admin user exists with password MoryaGanpati
+    try {
+      const shivamHash = bcrypt.hashSync('MoryaGanpati', 10);
+      const existingUser = db.prepare("SELECT * FROM users WHERE LOWER(username) = 'shivam' OR LOWER(name) = 'shivam' OR mobile = '8149793310'").get();
+      if (existingUser) {
+        db.prepare(`
+          UPDATE users 
+          SET username = 'Shivam', name = 'Shivam', name_mr = 'शिवम - व्यवस्थापक', password_hash = ?, role = 'ADMIN', can_change_payment_status = 1, can_manage_expenses = 1, is_active = 1
+          WHERE id = ?
+        `).run(shivamHash, existingUser.id);
+      } else {
+        db.prepare(`
+          INSERT INTO users (id, username, name, name_mr, mobile, password_hash, role, can_change_payment_status, can_manage_expenses, is_active, is_protected_founder)
+          VALUES ('user-shivam-admin', 'Shivam', 'Shivam', 'शिवम - व्यवस्थापक', '8149793310', ?, 'ADMIN', 1, 1, 1, 1)
+        `).run(shivamHash);
+      }
+    } catch (errUser) {
+      console.error('Shivam user initialization note:', errUser.message);
     }
 
     // 2. upi_contributions migrations
