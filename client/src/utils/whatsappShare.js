@@ -62,7 +62,8 @@ export function buildDonationShareText(receipt, lang = 'mr') {
 
 export function openWhatsAppShare(receipt, lang = 'mr') {
   const text = buildDonationShareText(receipt, lang);
-  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  const targetPhone = '918454009809';
+  const url = `https://wa.me/${targetPhone}?text=${encodeURIComponent(text)}`;
   if (typeof window !== 'undefined') {
     window.open(url, '_blank', 'noopener,noreferrer');
   }

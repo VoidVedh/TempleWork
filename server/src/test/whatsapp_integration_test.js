@@ -462,8 +462,63 @@ async function runWhatsAppIntegrationSuite() {
     assert.ok(actionsFound.includes('WHATSAPP_DELIVERED') || actionsFound.includes('WHATSAPP_READ'));
     console.log(`  ✔ Audit logs verified (actions recorded: ${actionsFound.join(', ')}).\n`);
 
+    // ------------------------------------------------------------------------
+    // [CHECK 11] Exclusive Receipt Recipient Policy (+91 84540 09809)
+    // ------------------------------------------------------------------------
+    console.log('▶ [CHECK 11] Testing Exclusive WhatsApp Recipient Policy (+91 84540 09809)...');
+    process.env.WHATSAPP_OVERRIDE_RECIPIENT_PHONE = '+91 84540 09809';
+
+    const testReceiptId = `test-rec-excl-${Date.now()}`;
+    const testPaymentId = `test-pay-excl-${Date.now()}`;
+    const testReceiptNo = `EMM-2026-EXCL-${Date.now().toString().slice(-4)}`;
+
+    db.prepare(`
+      INSERT INTO upi_contributions (
+        id, intent_ref, donor_name, donor_mobile, amount, upi_ref_no, verification_status, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, 'VERIFIED', CURRENT_TIMESTAMP)
+    `).run(testPaymentId, `REF-EXCL-${Date.now()}`, 'Devotee Random', '9123456780', 750, `UTREXCL${Date.now()}`);
+
+    db.prepare(`
+      INSERT INTO receipts (
+        id, receipt_no, donor_name, donor_mobile, amount, amount_in_words, collector_id, collector_name, payment_mode, issue_date
+      ) VALUES (?, ?, ?, ?, ?, 'Seven Hundred Fifty Rupees Only', ?, ?, 'Online UPI', CURRENT_TIMESTAMP)
+    `).run(testReceiptId, testReceiptNo, 'Devotee Random', '9123456780', 750, adminUser.id, adminUser.name);
+
+    createOutboxEntryTx(db, {
+      payment: { id: testPaymentId, donor_mobile: '9123456780' },
+      receipt: { id: testReceiptId, donor_mobile: '9123456780' }
+    });
+
+    let targetSentPhone = null;
+    const testExclWamid = 'wamid.excl_' + crypto.randomBytes(8).toString('hex');
+    global.fetch = async (url, options) => {
+      const urlStr = url.toString();
+      if (urlStr.includes('/media')) {
+        return { ok: true, status: 200, json: async () => ({ id: 'meta_media_excl' }) };
+      }
+      if (urlStr.includes('/messages')) {
+        const bodyObj = JSON.parse(options.body);
+        targetSentPhone = bodyObj.to;
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            messaging_product: 'whatsapp',
+            contacts: [{ input: bodyObj.to, wa_id: bodyObj.to }],
+            messages: [{ id: testExclWamid }]
+          })
+        };
+      }
+      return { ok: false, status: 404, json: async () => ({}) };
+    };
+
+    const exclDispatch = await processOutboxNotification(testReceiptId);
+    assert.strictEqual(exclDispatch.success, true);
+    assert.strictEqual(targetSentPhone, '918454009809', 'Target phone must strictly be 918454009809');
+    console.log('  ✔ Exclusive receipt routing verified: message successfully routed to +91 84540 09809 (918454009809).\n');
+
     console.log('====================================================');
-    console.log('🎉 ALL 10 WHATSAPP INTEGRATION CHECKS PASSED PERFECTLY!');
+    console.log('🎉 ALL 11 WHATSAPP INTEGRATION CHECKS PASSED PERFECTLY!');
     console.log('====================================================');
 
   } finally {

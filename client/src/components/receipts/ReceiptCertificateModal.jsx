@@ -18,15 +18,15 @@ export default function ReceiptCertificateModal({ isOpen, onClose, receipt }) {
   const currentYear = new Date().getFullYear();
 
   const handleWhatsAppShare = () => {
-    const mobile = receipt.donor_mobile ? receipt.donor_mobile.replace(/\D/g, '') : '';
-    const phoneWithCountry = mobile.startsWith('91') ? mobile : `91${mobile}`;
+    // Exclusive receipt recipient: +91 84540 09809
+    const targetPhone = '918454009809';
     const domainUrl = typeof window !== 'undefined' ? window.location.origin : 'https://shree-siddhivinayak-mandir.onrender.com';
     const verifyUrl = `${domainUrl}/?verify=${encodeURIComponent(receipt.receipt_no)}`;
     
     const message = `🚩 *॥ श्री गणेशाय नमः ॥* 🚩\n*श्री सिद्धिविनायक मंदिर (ऐरोली सेक्टर-५, नवी मुंबई ४००७०८)*\n\n*सार्वजनिक गणेशोत्सव ${currentYear} अधिकृत देणगी पावती (E-Receipt)*\n----------------------------------\n*पावती क्र. / Receipt No.* : ${receipt.receipt_no}\n*दिनांक / Date* : ${formatDate(receipt.issue_date)}\n*दाता / Donor* : ${receipt.donor_name}\n*रक्कम / Amount* : ₹ ${Number(receipt.amount).toLocaleString('en-IN')}/-\n*अक्षरी / In Words* : ${receipt.amount_in_words}\n*पेमेंट मोड / Mode* : ${receipt.payment_mode}\n*स्थिती / Status* : ${receipt.payment_status === 'Paid' ? 'जमा / प्राप्त (PAID)' : 'येणे बाकी (UNPAID)'}\n*गोळाकर्ता / Collector* : ${receipt.collector_name}\n----------------------------------\n📄 *अधिकृत त्रिभाषी ई-पावती पहा व PDF डाउनलोड करा:*\n${verifyUrl}\n----------------------------------\n॥ गणपती बाप्पा मोरया, मंगलमूर्ती मोरया ॥\nआपल्या दानाबद्दल श्री सिद्धिविनायक मंदिर आपले मनःपूर्वक आभारी आहे! Thank you!`;
 
     const encoded = encodeURIComponent(message);
-    const url = mobile ? `https://wa.me/${phoneWithCountry}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+    const url = `https://wa.me/${targetPhone}?text=${encoded}`;
     window.open(url, '_blank');
   };
 

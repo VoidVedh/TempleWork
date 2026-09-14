@@ -39,10 +39,11 @@ export function getDailyScheduleByLanguage(lang = 'mr') {
 }
 
 export const TEMPLE_CONTACT = {
-  phoneDisplay: '+91 98000 00000 / +91 98000 00001',
-  phonePrimary: '+91 98000 00000',
-  phoneSecondary: '+91 98000 00001',
+  phoneDisplay: '+91 84540 09809',
+  phonePrimary: '+91 84540 09809',
+  phoneSecondary: '+91 84540 09809',
   email: 'contact@shreesiddhivinayak.org',
-  whatsappNumber: '919800000000'
+  whatsappNumber: '918454009809',
+  receiptWhatsAppNumber: '918454009809'
 };
 

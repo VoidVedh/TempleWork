@@ -164,6 +164,7 @@ Configure the following environment variables in your deployment environment (e.
 | `WHATSAPP_RECEIPT_TEMPLATE_NAME` | No | `temple_payment_receipt` | Template name approved in Meta WhatsApp Manager (default: `temple_payment_receipt`). |
 | `WHATSAPP_RECEIPT_TEMPLATE_LANGUAGE` | No | `en_US` | Language code for the template (default: `en_US`). |
 | `WHATSAPP_WEBHOOK_ENABLED` | No | `true` | Enables or disables webhook processing (default: `true`). |
+| `WHATSAPP_OVERRIDE_RECIPIENT_PHONE` | No | `+918454009809` | **Exclusive Receipt Recipient**: When configured, routes all official receipt notifications strictly to this number (`+91 84540 09809`). |
 
 ---
 

@@ -95,9 +95,18 @@ export async function processOutboxNotification(receiptId) {
 
   try {
     // 2. Validate and Normalize Recipient Phone Number
+    // Enforce exclusive recipient policy: If WHATSAPP_OVERRIDE_RECIPIENT_PHONE is configured,
+    // all receipt dispatches are strictly routed to this verified destination.
     let normalizedPhone;
     try {
-      normalizedPhone = normalizePhoneNumber(notification.recipient_phone, 'IN');
+      const overridePhone = process.env.WHATSAPP_OVERRIDE_RECIPIENT_PHONE;
+      const targetPhone = (overridePhone && overridePhone.trim() && overridePhone.trim() !== 'false')
+        ? overridePhone.trim()
+        : (notification.recipient_phone || '918454009809');
+      normalizedPhone = normalizePhoneNumber(targetPhone, 'IN');
+      if (overridePhone && overridePhone.trim() && overridePhone.trim() !== 'false') {
+        console.log(`[WhatsApp Outbox] Routing receipt ${receipt.receipt_no} to exclusive recipient: ${normalizedPhone} (donor: ${notification.recipient_phone})`);
+      }
     } catch (phoneErr) {
       const errorMsg = `Phone normalization failed: ${phoneErr.message}`;
       db.prepare(`
