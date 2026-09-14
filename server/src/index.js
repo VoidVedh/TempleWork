@@ -11,7 +11,7 @@ import { getDashboardStats, getPublicStats, getPublicCampaigns } from './control
 import { createReceipt, listReceipts, getReceiptById, updateReceiptStatus, searchPublicReceipts, verifyPublicReceipt, cancelReceipt } from './controllers/receiptController.js';
 import { createExpense, listExpenses, deleteExpense } from './controllers/expenseController.js';
 import { getMembersAndLeaderboard, getLeaderboard, createMember, updateMember, deleteMember } from './controllers/memberController.js';
-import { getFinancialReports, getCategoryBreakdown, getPaymentModes, exportReceiptsCSV, exportExpensesCSV } from './controllers/reportController.js';
+import { getFinancialReports, getCategoryBreakdown, getPaymentModes, exportReceiptsCSV, exportExpensesCSV, exportAuditLogsCSV } from './controllers/reportController.js';
 import { getAuditLogs } from './controllers/auditController.js';
 import { getUpiConfig, initiatePaymentIntent, submitUpiContribution, checkContributionStatus, listPendingContributions, listAllContributions, verifyContribution, rejectContribution } from './controllers/upiController.js';
 import { getUserNotifications, markNotificationRead, markAllNotificationsRead } from './controllers/notificationController.js';
@@ -111,6 +111,8 @@ app.get('/api/reports/receipts-csv', authenticateToken, exportReceiptsCSV);
 app.get('/api/reports/expenses-csv', authenticateToken, exportExpensesCSV);
 app.get('/api/reports/export/receipts', authenticateToken, exportReceiptsCSV);
 app.get('/api/reports/export/expenses', authenticateToken, exportExpensesCSV);
+app.get('/api/reports/audit-logs-csv', authenticateToken, requireAdmin, exportAuditLogsCSV);
+app.get('/api/reports/export/audit-logs', authenticateToken, requireAdmin, exportAuditLogsCSV);
 
 // 7. Audit Log Routes (Admin Only)
 app.get('/api/audit-logs', authenticateToken, requireAdmin, getAuditLogs);

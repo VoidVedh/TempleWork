@@ -205,3 +205,36 @@ export function exportExpensesCSV(req, res) {
     res.status(500).json({ error: 'Failed to export expenses CSV.' });
   }
 }
+
+export function exportAuditLogsCSV(req, res) {
+  try {
+    const logs = db.prepare(`
+      SELECT id, action, details, user_name, user_role, created_at
+      FROM audit_logs
+      ORDER BY created_at DESC
+      LIMIT 1000
+    `).all();
+
+    let csvContent = 'आयडी (ID),क्रिया (Action),तपशील (Details),वापरकर्ता (User),भूमिका (Role),वेळ (Timestamp)\n';
+
+    logs.forEach(l => {
+      const escape = (val) => `"${(val || '').toString().replace(/"/g, '""')}"`;
+      csvContent += `${escape(l.id)},${escape(l.action)},${escape(l.details)},${escape(l.user_name)},${escape(l.user_role)},${escape(l.created_at)}\n`;
+    });
+
+    logAuditEvent(
+      'EXPORT_REPORT',
+      `ऑडिट लॉग CSV अहवाल डाउनलोड केला (Total ${logs.length} records)`,
+      req.user
+    );
+
+    const filename = `Siddhivinayak_Mandir_AuditLogs_${Date.now()}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send('\uFEFF' + csvContent);
+  } catch (err) {
+    console.error('Export audit logs CSV error:', err);
+    res.status(500).json({ error: 'Failed to export audit logs CSV.' });
+  }
+}
+
