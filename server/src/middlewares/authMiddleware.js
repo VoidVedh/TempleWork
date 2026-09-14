@@ -1,3 +1,4 @@
+import '../config/env.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import db from '../config/database.js';

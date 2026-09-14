@@ -1,9 +1,14 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
+import './config/env.js';
+import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import express from 'express';
+import cors from 'cors';
 import { initDatabase } from './config/database.js';
 import { ensureCleanProductionDatabase } from './config/initCleanDatabase.js';
 import { login, getCurrentUser, logout } from './controllers/authController.js';
@@ -20,9 +25,6 @@ import { authenticateToken, optionalAuth, requireAdmin, requireTreasurer, requir
 import { upload } from './middlewares/uploadMiddleware.js';
 
 import { loginLimiter, donationIntentLimiter, utrSubmissionLimiter, receiptSearchLimiter } from './middlewares/rateLimiter.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -223,9 +225,13 @@ app.use((err, req, res, next) => {
 
 // Start Server on 0.0.0.0 for Cloud / Docker / Render compatibility
 const HOST = '0.0.0.0';
-const server = app.listen(PORT, HOST, () => {
-  console.log(`🚩 Shree Siddhivinayak Mandir Production API Server running on http://${HOST}:${PORT}`);
-});
+let server = null;
+const isMainModule = process.argv[1] && path.resolve(process.argv[1]) === __filename;
+if (isMainModule || process.env.AUTO_START_SERVER === 'true') {
+  server = app.listen(PORT, HOST, () => {
+    console.log(`🚩 Shree Siddhivinayak Mandir Production API Server running on http://${HOST}:${PORT}`);
+  });
+}
 
 export default app;
-export { app };
+export { app, server };

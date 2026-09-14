@@ -8,7 +8,12 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
     "seed": "node src/seed/seedData.js",
-    "test": "node src/test/security_payment_test.js"
+    "test": "node src/test/security_payment_test.js",
+    "test:security": "node src/test/blue_team_security_test.js",
+    "test:whatsapp": "node src/test/whatsapp_integration_test.js",
+    "test:verifications": "node src/test/run_all_verifications.js",
+    "test:live": "node src/test/live_runner_test.js",
+    "test:all": "node src/test/security_payment_test.js && node src/test/blue_team_security_test.js && node src/test/whatsapp_integration_test.js && node src/test/run_all_verifications.js && node src/test/live_runner_test.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
