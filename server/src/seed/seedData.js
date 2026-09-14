@@ -24,8 +24,8 @@ export function seedInitialData() {
     'श्री सिद्धिविनायक मंदिर',
     'Airoli Sector-5, Navi Mumbai 400708',
     'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८',
-    'MH/08/2024',
-    2024
+    'MH/08/2026',
+    2026
   );
 
   // 2. Insert Users

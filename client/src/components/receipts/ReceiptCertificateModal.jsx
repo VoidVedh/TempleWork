@@ -203,8 +203,8 @@ export default function ReceiptCertificateModal({ isOpen, onClose, receipt }) {
                     <div className="cert-badge-fest">
                       {receiptLang === 'trilingual' ? 'सार्वजनिक गणेशोत्सव • SARVAJANIK GANESHOTSAV' : labels.subTitle}
                     </div>
-                    <div className="cert-reg-no">
-                      रजिस्ट्रेशन क्र. महा/०८/२०२४ (महाराष्ट्र राज्य) • Reg. No. MH/08/2024
+                    <div className="cert-sub-reg">
+                      रजिस्ट्रेशन क्र. महा/०८/२०२६ (महाराष्ट्र राज्य) • Reg. No. MH/08/2026
                     </div>
                   </div>
 

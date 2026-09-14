@@ -4,7 +4,7 @@ export const translations = {
     mandalName: "श्री सिद्धिविनायक मंदिर",
     mandalSub: "सार्वजनिक गणेशोत्सव २०२६",
     mandalLocation: "ऐरोली सेक्टर-५, नवी मुंबई ४००७०८",
-    regNo: "रजिस्ट्रेशन क्र. महा/०८/२०२४",
+    regNo: "रजिस्ट्रेशन क्र. महा/०८/२०२६",
     invocation: "॥ श्री गणेशाय नमः ॥",
     blessing: "॥ श्री गणेशाच्या कृपेने आपल्या घरी सुख, समृद्धी आणि शांती लाभो हीच प्रार्थना धन्यवाद ! ॥",
 
@@ -126,7 +126,7 @@ export const translations = {
     mandalName: "Shree Siddhivinayak Mandir",
     mandalSub: "Sarvajanik Ganeshotsav 2026",
     mandalLocation: "Airoli Sector-5, Navi Mumbai 400708",
-    regNo: "Reg. No. MH/08/2024",
+    regNo: "Reg. No. MH/08/2026",
     invocation: "॥ Shree Ganeshaya Namah ॥",
     blessing: "May Lord Ganesha bestow joy, prosperity, and peace upon your family. Thank you!",
 
@@ -248,7 +248,7 @@ export const translations = {
     mandalName: "श्री सिद्धिविनायक मंदिर",
     mandalSub: "सार्वजनिक गणेशोत्सव २०२६",
     mandalLocation: "ऐरोली सेक्टर-५, नवी मुंबई ४००७०८",
-    regNo: "पंजीकरण संख्या महा/०८/२०२४",
+    regNo: "पंजीकरण संख्या महा/०८/२०२६",
     invocation: "॥ श्री गणेशाय नमः ॥",
     blessing: "॥ भगवान श्री गणेश की कृपा से आपके परिवार में सुख, शांति और समृद्धि आए। धन्यवाद! ॥",
 

@@ -3,7 +3,7 @@
  */
 
 export function buildDonationShareText(receipt, lang = 'mr') {
-  const templeName = 'श्री सिद्धिविनायक मंदिर (Reg. No. MH/08/2024)';
+  const templeName = 'श्री सिद्धिविनायक मंदिर (Reg. No. MH/08/2026)';
   const receiptNo = receipt.receipt_no || 'EMM-XXXX';
   const amount = receipt.amount || 0;
   const donorName = receipt.donor_name || 'गणेश भक्त';

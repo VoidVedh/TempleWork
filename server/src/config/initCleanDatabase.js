@@ -18,7 +18,7 @@ export function ensureCleanProductionDatabase() {
       process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर',
       process.env.MANDAL_LOCATION_EN || 'Airoli Sector-5, Navi Mumbai 400708',
       process.env.MANDAL_LOCATION_MR || 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८',
-      process.env.MANDAL_REG_NO || 'MH/08/2024',
+      process.env.MANDAL_REG_NO || 'MH/08/2026',
       parseInt(process.env.MANDAL_YEAR || new Date().getFullYear(), 10)
     );
     console.log('🏛️ Mandal production settings initialized.');

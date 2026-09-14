@@ -3,7 +3,7 @@ export const MANDAL_CONFIG = {
   mandalNameMr: process.env.MANDAL_NAME_MR || 'श्री सिद्धिविनायक मंदिर',
   locationEn: process.env.MANDAL_LOCATION_EN || 'Airoli Sector-5, Navi Mumbai 400708',
   locationMr: process.env.MANDAL_LOCATION_MR || 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८',
-  regNo: process.env.MANDAL_REG_NO || 'MH/08/2024',
+  regNo: process.env.MANDAL_REG_NO || 'MH/08/2026',
   year: parseInt(process.env.MANDAL_YEAR || new Date().getFullYear(), 10),
   
   // Official Centralized Mandal UPI Configuration

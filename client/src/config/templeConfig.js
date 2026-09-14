@@ -20,7 +20,7 @@ export const MANDAL_IDENTITY = {
   name_hi: 'श्री सिद्धिविनायक मंदिर',
   location_mr: 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८ (महाराष्ट्र)',
   location_en: 'Airoli Sector-5, Navi Mumbai 400708 (Maharashtra)',
-  reg_no: 'MH/08/2024'
+  reg_no: 'MH/08/2026'
 };
 
 export const TEMPLE_DAILY_SCHEDULE = [

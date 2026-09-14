@@ -148,5 +148,5 @@ The repository includes multi-stage [Dockerfile](Dockerfile) and [render.yaml](r
 ---
 
 ## 📄 License & Rights
-© 2026 **श्री सिद्धिविनायक मंदिर (MH/08/2024)**. All Rights Reserved.
+© 2026 **श्री सिद्धिविनायक मंदिर (MH/08/2026)**. All Rights Reserved.
 
