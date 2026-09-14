@@ -22,3 +22,19 @@ export const MANDAL_IDENTITY = {
   location_en: 'Airoli Sector-5, Navi Mumbai 400708 (Maharashtra)',
   reg_no: 'MH/08/2024'
 };
+
+export const TEMPLE_DAILY_SCHEDULE = [
+  { time: '06:00 AM', name_mr: 'मंदिर उघडणे व मंगल दर्शन', name_en: 'Temple Opens & Mangal Darshan', name_hi: 'मंदिर उद्घाटन एवं मंगल दर्शन' },
+  { time: '08:00 AM', name_mr: 'सकाळची महाआरती', name_en: 'Morning Maha Aarti', name_hi: 'प्रातः महाआरती' },
+  { time: '12:30 PM', name_mr: 'महाप्रसाद व नैवेद्य समर्पण', name_en: 'Mahaprasad & Naivedya Offering', name_hi: 'महाप्रसाद एवं नैवेद्य समर्पण' },
+  { time: '08:00 PM', name_mr: 'संध्याकाळची महाआरती', name_en: 'Evening Maha Aarti', name_hi: 'संध्या महाआरती' },
+  { time: '10:00 PM', name_mr: 'शेजारती व मंदिर विश्राम', name_en: 'Shej Aarti & Temple Rest', name_hi: 'शेजारती एवं मंदिर विश्राम' }
+];
+
+export function getDailyScheduleByLanguage(lang = 'mr') {
+  return TEMPLE_DAILY_SCHEDULE.map(item => ({
+    time: item.time,
+    title: lang === 'en' ? item.name_en : (lang === 'hi' ? item.name_hi : item.name_mr)
+  }));
+}
+
