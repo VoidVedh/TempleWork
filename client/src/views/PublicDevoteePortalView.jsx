@@ -799,6 +799,11 @@ export default function PublicDevoteePortalView({
               </div>
             )}
 
+            <div className="receipt-search-helper-badge" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 14px', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', color: '#1e40af', fontSize: '12.5px', marginBottom: '16px' }}>
+              <span>💡</span>
+              <span>{lang === 'mr' ? 'आपला १०-अंकी नोंदणीकृत मोबाईल नंबर किंवा पावती क्र. टाकून त्वरित पावती डाउनलोड करा.' : 'Enter your 10-digit registered mobile number or receipt number to download your certificate instantly.'}</span>
+            </div>
+
             <form onSubmit={handleSearchReceipts} className="receipt-search-form">
               <div className="form-row-2">
                 <div className="form-group">
