@@ -17,6 +17,8 @@ services:
         value: 9029359525m@pnb
       - key: MANDAL_PAYEE_NAME
         value: Shree Siddhivinayak Mandir
+      - key: FRONTEND_URL
+        value: https://shree-siddhivinayak-mandir.onrender.com
       - key: UPLOAD_DIR
         value: /app/server/data/uploads
     disk:

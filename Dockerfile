@@ -35,6 +35,8 @@ VOLUME ["/app/server/data", "/app/server/uploads"]
 
 ENV NODE_ENV=production
 ENV PORT=10000
+ENV JWT_SECRET=shree-siddhivinayak-mandir-prod-secret-key-2026-secure
+ENV FRONTEND_URL=https://shree-siddhivinayak-mandir.onrender.com
 
 EXPOSE 10000 5001
 
