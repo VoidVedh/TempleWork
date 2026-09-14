@@ -133,5 +133,20 @@ The repository includes multi-stage [Dockerfile](Dockerfile) and [render.yaml](r
 
 ---
 
+## 🚀 Release 1.1.0 Changelog
+
+- **Security Headers**: Standardized HTTP protection headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`).
+- **Audit Export**: Added admin CSV export for complete audit logs.
+- **Temple Schedule**: Added daily Aarti and Darshan routine helpers (`TEMPLE_DAILY_SCHEDULE`).
+- **Print Optimization**: Custom print stylesheets hiding browser chrome for clean physical receipt printing.
+- **Web Audio Synthesis**: Auspicious temple bell chime and transaction sound feedback.
+- **WhatsApp Formatter**: Multilingual donation sharing text in Marathi, Hindi, and English.
+- **Database Scripts**: Automated online SQLite backups (`backup_db.js`), integrity audit (`verify_db_integrity.js`), and demo data generation (`generate_demo_vargani.js`).
+- **API Smoke Testing**: Automated public endpoint validation suite (`smoke_test.js`).
+- **Documentation**: Comprehensive REST API reference (`docs/api-documentation.md`), deployment operations guide (`docs/deployment-guide.md`), and architecture specification (`docs/architecture-and-security.md`).
+
+---
+
 ## 📄 License & Rights
 © 2026 **श्री सिद्धिविनायक मंदिर (MH/08/2024)**. All Rights Reserved.
+
