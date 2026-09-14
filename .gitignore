@@ -16,6 +16,7 @@ data/*.db-shm
 server/data/*.db
 server/data/*.db-wal
 server/data/*.db-shm
+server/data/backups/
 !server/data/.gitkeep
 
 # Build output
