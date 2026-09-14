@@ -1,0 +1,36 @@
+{
+  "name": "shree-siddhivinayak-mandir",
+  "version": "1.1.0",
+  "description": "श्री सिद्धिविनायक मंदिर - Fullstack Devotee & Management Application",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "install:all": "npm --prefix client install && npm --prefix server install",
+    "build": "npm --prefix client run build",
+    "start": "node server/src/index.js",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "test": "node server/src/test/run_all_verifications.js && node server/src/test/blue_team_security_test.js && node server/src/test/security_payment_test.js",
+    "test:security": "node server/src/test/blue_team_security_test.js",
+    "test:regression": "node server/src/test/run_all_verifications.js",
+    "test:payment": "node server/src/test/security_payment_test.js",
+    "db:backup": "node server/scripts/backup_db.js",
+    "db:verify": "node server/scripts/verify_db_integrity.js"
+  },
+  "keywords": [
+    "ganesh-temple",
+    "temple-management",
+    "upi-donations",
+    "trilingual-receipts",
+    "express",
+    "react",
+    "vite",
+    "sqlite"
+  ],
+  "author": "Shree Siddhivinayak Mandir Trust",
+  "license": "ISC"
+}

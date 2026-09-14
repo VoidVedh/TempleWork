@@ -1,0 +1,93 @@
+name: CI/CD & Production Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-and-validate:
+    name: Build & Security Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            client/package-lock.json
+            server/package-lock.json
+
+      - name: Install Client Dependencies
+        run: npm ci --prefix client
+
+      - name: Build Frontend Application
+        run: npm run build --prefix client
+
+      - name: Install Server Dependencies
+        run: npm ci --prefix server
+
+      - name: Run Full Regression Verification Suite
+        run: node server/src/test/run_all_verifications.js
+
+      - name: Run Blue Team Defensive Security Audit
+        run: node server/src/test/blue_team_security_test.js
+
+      - name: Run Financial Integrity & Payment Test Suite
+        run: node server/src/test/security_payment_test.js
+
+      - name: Run Client Improvements Test Suite
+        run: node server/src/test/client_improvements_test.js
+
+  docker-verification:
+    name: Multi-Stage Docker Build Verification
+    runs-on: ubuntu-latest
+    needs: test-and-validate
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: shree-siddhivinayak-mandir:ci-test
+
+  deploy-render:
+    name: Deploy to Render Production
+    runs-on: ubuntu-latest
+    needs: [test-and-validate, docker-verification]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+
+    steps:
+      - name: Trigger Render Deploy Hook (if configured)
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            echo "🚀 Triggering Render production deployment webhook..."
+            RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$RENDER_DEPLOY_HOOK")
+            HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+            BODY=$(echo "$RESPONSE" | head -n -1)
+            if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+              echo "✅ Render deployment successfully triggered! HTTP $HTTP_STATUS"
+            else
+              echo "⚠️ Render deploy webhook returned status: $HTTP_STATUS ($BODY)"
+            fi
+          else
+            echo "ℹ️ RENDER_DEPLOY_HOOK_URL secret not configured in GitHub repository."
+            echo "ℹ️ Auto-deploy on Render will trigger via Git push automatically if connected to GitHub."
+          fi

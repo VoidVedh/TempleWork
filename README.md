@@ -1,11 +1,16 @@
 # 🚩 श्री सिद्धिविनायक मंदिर — Shree Siddhivinayak Mandir
 ### *सर्वसमावेशक मंदिर व्यवस्थापन, त्रिभाषी देणगी पावती व UPI देणगी प्रणाली*
 
+[![CI/CD & Production Deployment](https://github.com/VoidVedh/TempleWork/actions/workflows/deploy.yml/badge.svg)](https://github.com/VoidVedh/TempleWork/actions/workflows/deploy.yml)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](https://nodejs.org)
+[![Docker Ready](https://img.shields.io/badge/docker-ready-blue.svg)](Dockerfile)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/VoidVedh/TempleWork)
+
 ---
 
 ## 📖 Project Overview
 
-**श्री सिद्धिविनायक मंदिर (Shree Siddhivinayak Mandir / TempleWork)** is a devotional temple and mandal management application designed for transparent contribution collection, trilingual receipt generation (English, Hindi, Marathi), expense accounting, karyakarta directories, and secure manual UPI vargani processing.
+**श्री सिद्धिविनायक मंदिर (Shree Siddhivinayak Mandir / TempleWork)** is an enterprise-grade devotional temple and mandal management application designed for transparent contribution collection, trilingual receipt generation (English, Hindi, Marathi), expense accounting, karyakarta directories, and secure manual UPI vargani processing.
 
 ---
 
@@ -49,45 +54,49 @@ Receipts support full trilingual rendering with zero missing glyphs using Google
 
 ---
 
-## 💻 Local Development
+## 💻 Quick Start & Local Development
 
 ### Prerequisites
-* Node.js v18+ (tested on v20 and v24)
+* Node.js v20+ (tested on v20 and v24)
 * npm v9+
 
-### Backend Setup
+### Unified Root Commands (Recommended)
 ```bash
-cd server
-npm install
-npm start            # Runs node src/index.js on port 5001
-# Or for file watching:
-npm run dev
+# 1. Install all dependencies (client & server)
+npm run install:all
+
+# 2. Build frontend SPA and place assets into server/public
+npm run build
+
+# 3. Start unified production server
+npm start
+
+# 4. Run full test suite (Regression, Blue Team Security, Financial Integrity)
+npm test
 ```
 
-### Frontend Setup
+### Granular Setup
 ```bash
-cd client
-npm install
-npm run dev          # Runs Vite development server on port 5173
-```
+# Backend standalone
+cd server && npm install && npm start
 
-### Production Build
-```bash
-# Build frontend and copy static bundle to server/public
-npm run build --prefix client
+# Frontend standalone
+cd client && npm install && npm run dev
 ```
 
 ---
 
-## 🧪 Testing
+## 🧪 Automated Testing Suites
 
-Run the automated test suites:
+Run all automated test suites directly from the root:
 ```bash
-# 1. Full Regression Suite (Groups A1-A3, B1-B3, C1-C10, Regression Flow)
-node server/src/test/run_all_verifications.js
+# Run all suites (Regression, Blue Team, Financial Integrity)
+npm test
 
-# 2. Client Improvements Suite (2024 Cleanup, Arti Timings, Trilingual Receipts, UTR Dedup, Admin UX)
-node server/src/test/client_improvements_test.js
+# Or run individual suites:
+npm run test:regression   # Groups A1-A3, B1-B3, C1-C10
+npm run test:security     # Blue Team PII & OWASP audit
+npm run test:payment      # 10 Financial integrity & concurrency cases
 ```
 
 ---
