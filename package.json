@@ -14,10 +14,11 @@
     "dev:server": "npm --prefix server run dev",
     "dev:client": "npm --prefix client run dev",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "test": "node server/src/test/run_all_verifications.js && node server/src/test/blue_team_security_test.js && node server/src/test/security_payment_test.js",
+    "test": "node server/src/test/run_all_verifications.js && node server/src/test/blue_team_security_test.js && node server/src/test/security_payment_test.js && node server/src/test/whatsapp_integration_test.js",
     "test:security": "node server/src/test/blue_team_security_test.js",
     "test:regression": "node server/src/test/run_all_verifications.js",
     "test:payment": "node server/src/test/security_payment_test.js",
+    "test:whatsapp": "node server/src/test/whatsapp_integration_test.js",
     "db:backup": "node server/scripts/backup_db.js",
     "db:verify": "node server/scripts/verify_db_integrity.js"
   },

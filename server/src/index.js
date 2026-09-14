@@ -13,7 +13,8 @@ import { createExpense, listExpenses, deleteExpense } from './controllers/expens
 import { getMembersAndLeaderboard, getLeaderboard, createMember, updateMember, deleteMember } from './controllers/memberController.js';
 import { getFinancialReports, getCategoryBreakdown, getPaymentModes, exportReceiptsCSV, exportExpensesCSV, exportAuditLogsCSV } from './controllers/reportController.js';
 import { getAuditLogs } from './controllers/auditController.js';
-import { getUpiConfig, initiatePaymentIntent, submitUpiContribution, checkContributionStatus, listPendingContributions, listAllContributions, verifyContribution, rejectContribution } from './controllers/upiController.js';
+import { getUpiConfig, initiatePaymentIntent, submitUpiContribution, checkContributionStatus, listPendingContributions, listAllContributions, verifyContribution, rejectContribution, retryWhatsAppReceipt, getWhatsAppStatus } from './controllers/upiController.js';
+import { verifyWebhook, processWebhook } from './controllers/whatsappWebhookController.js';
 import { getUserNotifications, markNotificationRead, markAllNotificationsRead } from './controllers/notificationController.js';
 import { authenticateToken, optionalAuth, requireAdmin, requireTreasurer, requireExpenseAuthority, requirePaymentStatusAuthority } from './middlewares/authMiddleware.js';
 import { upload } from './middlewares/uploadMiddleware.js';
@@ -61,8 +62,13 @@ app.use(cors({
   credentials: true
 }));
 
-// Body parsing with safe limits
-app.use(express.json({ limit: '2mb' }));
+// Body parsing with safe limits and raw body buffer preservation for webhook signature verification
+app.use(express.json({
+  limit: '2mb',
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
 
 // Static uploads folder
@@ -141,8 +147,14 @@ app.get('/api/upi/pending', authenticateToken, requireAdmin, listPendingContribu
 app.get('/api/upi/all', authenticateToken, requireAdmin, listAllContributions);
 app.post('/api/upi/:id/verify', authenticateToken, requireAdmin, verifyContribution);
 app.post('/api/upi/:id/reject', authenticateToken, requireAdmin, rejectContribution);
+app.post('/api/upi/:id/retry-whatsapp', authenticateToken, requireAdmin, retryWhatsAppReceipt);
+app.get('/api/upi/:id/whatsapp-status', authenticateToken, requireAdmin, getWhatsAppStatus);
 
-// 9. Health Check
+// 9. Meta WhatsApp Cloud API Webhook Routes (Public for Meta with HMAC validation)
+app.get('/api/webhooks/whatsapp', verifyWebhook);
+app.post('/api/webhooks/whatsapp', processWebhook);
+
+// 10. Health Check
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',

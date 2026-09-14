@@ -2,6 +2,12 @@ import crypto from 'crypto';
 import db from '../config/database.js';
 import { MANDAL_CONFIG } from '../config/mandalConfig.js';
 import { logAuditEvent } from '../utils/auditLogger.js';
+import { 
+  createOutboxEntryTx, 
+  triggerBackgroundDispatch, 
+  retryNotification, 
+  getReceiptNotificationStatus 
+} from '../services/whatsappNotificationService.js';
 
 const MARATHI_WEEKDAYS = ['रविवार', 'सोमवार', 'मंगळवार', 'बुधवार', 'गुरुवार', 'शुक्रवार', 'शनिवार'];
 
@@ -311,9 +317,15 @@ export function checkContributionStatus(req, res) {
 export function listPendingContributions(req, res) {
   try {
     const list = db.prepare(`
-      SELECT * FROM upi_contributions
-      WHERE verification_status = 'PENDING_VERIFICATION'
-      ORDER BY submitted_at DESC, created_at DESC
+      SELECT c.*, 
+             w.status as whatsapp_status,
+             w.meta_message_id as whatsapp_msg_id,
+             w.error_message as whatsapp_error,
+             w.attempt_count as whatsapp_attempt_count
+      FROM upi_contributions c
+      LEFT JOIN whatsapp_notifications w ON c.receipt_id = w.receipt_id
+      WHERE c.verification_status = 'PENDING_VERIFICATION'
+      ORDER BY c.submitted_at DESC, c.created_at DESC
     `).all();
 
     res.json({ pending_contributions: list });
@@ -329,8 +341,14 @@ export function listPendingContributions(req, res) {
 export function listAllContributions(req, res) {
   try {
     const list = db.prepare(`
-      SELECT * FROM upi_contributions
-      ORDER BY created_at DESC
+      SELECT c.*, 
+             w.status as whatsapp_status,
+             w.meta_message_id as whatsapp_msg_id,
+             w.error_message as whatsapp_error,
+             w.attempt_count as whatsapp_attempt_count
+      FROM upi_contributions c
+      LEFT JOIN whatsapp_notifications w ON c.receipt_id = w.receipt_id
+      ORDER BY c.created_at DESC
     `).all();
 
     res.json({ contributions: list });
@@ -457,7 +475,15 @@ export function verifyContribution(req, res) {
     const createdReceipt = db.prepare('SELECT * FROM receipts WHERE id = ?').get(receiptId);
     const updatedContribution = db.prepare('SELECT * FROM upi_contributions WHERE id = ?').get(contributionId);
 
-    // 5. Audit Log: PAYMENT_VERIFIED & RECEIPT_CREATED
+    // 5. Durable Transactional Outbox: Queue WhatsApp receipt in the same SQLite transaction
+    let outboxRecord = null;
+    try {
+      outboxRecord = createOutboxEntryTx(db, { payment: updatedContribution, receipt: createdReceipt });
+    } catch (outboxErr) {
+      console.error('[WhatsApp Outbox] Failed to create outbox entry in tx:', outboxErr.message);
+    }
+
+    // 6. Audit Log: PAYMENT_VERIFIED & RECEIPT_CREATED
     logAuditEvent(
       'PAYMENT_VERIFIED',
       `UPI वर्गणी पडताळणी मंजूर: संदर्भ ${contribution.intent_ref} | पावती क्र. ${receipt_no} | ₹${contribution.amount} | दाता: ${contribution.donor_name} | UTR: ${contribution.upi_ref_no} द्वारे ${collector_name}`,
@@ -470,18 +496,27 @@ export function verifyContribution(req, res) {
       adminUser
     );
 
-    return { receipt: createdReceipt, contribution: updatedContribution };
+    return { receipt: createdReceipt, contribution: updatedContribution, outbox: outboxRecord };
   });
 
   try {
     const { id } = req.params;
     const result = verifyTx(id, req.user);
 
+    // 7. Background Dispatch Outside Transaction (Decoupled execution)
+    if (result.receipt?.id) {
+      triggerBackgroundDispatch(result.receipt.id);
+    }
+
     res.json({
       success: true,
       message: 'वर्गणी पडताळणी यशस्वी! अधिकृत पावती तयार झाली.',
       receipt: result.receipt,
-      contribution: result.contribution
+      contribution: result.contribution,
+      whatsapp: {
+        status: result.outbox ? result.outbox.status : 'QUEUED',
+        attempt_count: 0
+      }
     });
   } catch (err) {
     console.error('Verify UPI contribution error:', err.message);
@@ -553,4 +588,53 @@ export function rejectContribution(req, res) {
     res.status(err.status || 500).json({ error: err.message || 'Failed to reject UPI contribution.' });
   }
 }
+
+/**
+ * 8. RETRY WHATSAPP RECEIPT NOTIFICATION (Admin Only)
+ */
+export async function retryWhatsAppReceipt(req, res) {
+  try {
+    const { id } = req.params;
+    const contribution = db.prepare('SELECT * FROM upi_contributions WHERE id = ?').get(id);
+
+    if (!contribution) {
+      return res.status(404).json({ error: 'वर्गणी नोंद सापडली नाही.' });
+    }
+
+    if (contribution.verification_status !== 'VERIFIED' || !contribution.receipt_id) {
+      return res.status(400).json({ error: 'वर्गणी पडताळलेली नाही किंवा अधिकृत पावती तयार झालेली नाही.' });
+    }
+
+    const result = await retryNotification(contribution.receipt_id, req.user);
+    res.json(result);
+  } catch (err) {
+    console.error('Retry WhatsApp receipt error:', err.message);
+    res.status(err.status || 500).json({ error: err.message || 'Failed to retry WhatsApp receipt.' });
+  }
+}
+
+/**
+ * 9. GET WHATSAPP DELIVERY STATUS (Admin Only)
+ */
+export function getWhatsAppStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const contribution = db.prepare('SELECT * FROM upi_contributions WHERE id = ?').get(id);
+
+    if (!contribution) {
+      return res.status(404).json({ error: 'वर्गणी नोंद सापडली नाही.' });
+    }
+
+    const notification = contribution.receipt_id ? getReceiptNotificationStatus(contribution.receipt_id) : null;
+
+    res.json({
+      status: notification ? notification.status : 'NONE',
+      notification
+    });
+  } catch (err) {
+    console.error('Get WhatsApp status error:', err.message);
+    res.status(500).json({ error: 'Failed to retrieve WhatsApp status.' });
+  }
+}
+
 

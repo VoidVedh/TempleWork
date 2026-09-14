@@ -518,6 +518,39 @@ export function initDatabase() {
     console.error('Gallery initialization error:', e.message);
   }
 
+  // 16. WhatsApp Notifications table (Durable Transactional Outbox)
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS whatsapp_notifications (
+      id TEXT PRIMARY KEY,
+      payment_id TEXT NOT NULL,
+      receipt_id TEXT NOT NULL UNIQUE,
+      recipient_phone TEXT NOT NULL,
+      template_name TEXT NOT NULL,
+      template_language TEXT NOT NULL DEFAULT 'en_US',
+      status TEXT NOT NULL DEFAULT 'QUEUED',
+      provider TEXT NOT NULL DEFAULT 'META_WHATSAPP',
+      meta_message_id TEXT UNIQUE,
+      error_code TEXT,
+      error_message TEXT,
+      attempt_count INTEGER NOT NULL DEFAULT 0,
+      dispatch_locked_until DATETIME,
+      last_attempt_at DATETIME,
+      last_error_at DATETIME,
+      sent_at DATETIME,
+      delivered_at DATETIME,
+      read_at DATETIME,
+      pdf_path TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (payment_id) REFERENCES upi_contributions(id),
+      FOREIGN KEY (receipt_id) REFERENCES receipts(id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_whatsapp_meta_msg_id ON whatsapp_notifications(meta_message_id);
+    CREATE INDEX IF NOT EXISTS idx_whatsapp_status ON whatsapp_notifications(status);
+    CREATE INDEX IF NOT EXISTS idx_whatsapp_payment_id ON whatsapp_notifications(payment_id);
+    CREATE INDEX IF NOT EXISTS idx_whatsapp_receipt_id ON whatsapp_notifications(receipt_id);
+  `);
+
   // Perform backward-compatible column migrations
   try {
     // 1. users table role expansion & migration

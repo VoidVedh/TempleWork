@@ -68,6 +68,7 @@ ensureCleanProductionDatabase();
 const currentYear = new Date().getFullYear();
 
 // Clean up any previous test artifacts
+db.prepare("DELETE FROM whatsapp_notifications WHERE receipt_id IN (SELECT id FROM receipts WHERE receipt_no LIKE 'EMM-%-9%' OR receipt_no LIKE 'EMM-%-1%' OR id LIKE 'rec-%' OR donor_name LIKE '%Test%' OR donor_name LIKE '%Sequential%')").run();
 db.prepare("UPDATE upi_contributions SET receipt_id = NULL WHERE receipt_id IN (SELECT id FROM receipts WHERE receipt_no LIKE 'EMM-%-9%' OR receipt_no LIKE 'EMM-%-1%' OR id LIKE 'rec-%' OR donor_name LIKE '%Test%' OR donor_name LIKE '%Sequential%')").run();
 db.prepare("DELETE FROM upi_contributions WHERE donor_mobile LIKE '981111%' OR notes LIKE 'Testing%'").run();
 db.prepare("DELETE FROM receipts WHERE receipt_no LIKE 'EMM-%-9%' OR receipt_no LIKE 'EMM-%-1%' OR id LIKE 'rec-%' OR donor_name LIKE '%Test%' OR donor_name LIKE '%Sequential%'").run();
@@ -193,6 +194,7 @@ db.prepare(`
 `).run(donorMobile);
 
 const b3RecId = 'rec-b3-test';
+db.prepare('DELETE FROM whatsapp_notifications WHERE receipt_id = ?').run(b3RecId);
 db.prepare('DELETE FROM receipts WHERE id = ?').run(b3RecId);
 db.prepare(`
   INSERT INTO receipts (id, receipt_no, donor_name, donor_mobile, amount, amount_in_words, payment_mode, payment_status, collector_id, collector_name)
@@ -225,6 +227,7 @@ assert.strictEqual(resStatus3.getStatusCode(), 200);
 donorRow = db.prepare('SELECT * FROM donors WHERE mobile = ?').get(donorMobile);
 assert.strictEqual(donorRow.total_contributions, 0, 'Donor total must return to 0 when status changes to Unpaid');
 assert.strictEqual(donorRow.contributions_count, 0, 'Donor count must return to 0');
+db.prepare('DELETE FROM whatsapp_notifications WHERE receipt_id = ?').run(b3RecId);
 db.prepare('DELETE FROM receipts WHERE id = ?').run(b3RecId);
 db.prepare('DELETE FROM donors WHERE mobile = ?').run(donorMobile);
 console.log('  ✅ B3 PASSED: Donor totals accurately synced and immune to double-counting\n');
@@ -357,6 +360,7 @@ assert.ok(dashStats.stats && dashStats.stats.total_paid > 0, 'Dashboard reflects
 console.log('  ✅ SECTION 6 PASSED: Full regression test completed with 100% pass rate\n');
 
 // Clean up all test data so database is in clean state
+db.prepare("DELETE FROM whatsapp_notifications WHERE receipt_id IN (SELECT id FROM receipts WHERE receipt_no LIKE 'EMM-%-9%' OR receipt_no LIKE 'EMM-%-1%' OR id LIKE 'rec-%' OR donor_name LIKE '%Test%' OR donor_name LIKE '%Sequential%')").run();
 db.prepare("UPDATE upi_contributions SET receipt_id = NULL WHERE receipt_id IN (SELECT id FROM receipts WHERE receipt_no LIKE 'EMM-%-9%' OR receipt_no LIKE 'EMM-%-1%' OR id LIKE 'rec-%' OR donor_name LIKE '%Test%' OR donor_name LIKE '%Sequential%')").run();
 db.prepare("DELETE FROM upi_contributions WHERE donor_mobile LIKE '981111%' OR notes LIKE 'Testing%'").run();
 db.prepare("DELETE FROM receipts WHERE receipt_no LIKE 'EMM-%-9%' OR receipt_no LIKE 'EMM-%-1%' OR id LIKE 'rec-%' OR donor_name LIKE '%Test%' OR donor_name LIKE '%Sequential%'").run();

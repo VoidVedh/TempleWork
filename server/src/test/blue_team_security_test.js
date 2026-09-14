@@ -167,6 +167,7 @@ async function runBlueTeamAudit() {
   console.log('  ✅ resetDemoData is blocked with HTTP 403 in production environment.\n');
 
   // Cleanup test records
+  db.prepare("DELETE FROM whatsapp_notifications WHERE receipt_id IN ('sec-rec-1', 'csv-inj-1')").run();
   db.prepare("DELETE FROM receipts WHERE id IN ('sec-rec-1', 'csv-inj-1')").run();
   db.prepare("DELETE FROM upi_contributions WHERE id = 'sec-upi-1'").run();
 
