@@ -86,7 +86,7 @@ export default function LoginView({ onBackToPublic, isModal, onClose }) {
                 className="form-input"
                 value={usernameOrMobile}
                 onChange={(e) => setUsernameOrMobile(e.target.value)}
-                placeholder={lang === 'mr' ? 'उदा. 9987942399 किंवा Shivam' : 'e.g. 9987942399 or Shivam'}
+                placeholder={lang === 'mr' ? 'उदा. मोबाईल क्रमांक किंवा युजरनेम' : 'e.g. Mobile number or username'}
                 required
                 id="input-login-mobile"
                 autoCapitalize="none"

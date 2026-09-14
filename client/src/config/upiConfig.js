@@ -1,5 +1,5 @@
 export const MANDAL_UPI_CONFIG = {
-  upiId: '9029359525m@pnb',
+  upiId: import.meta.env?.VITE_MANDAL_UPI_ID || 'siddhivinayak.mandir@upi',
   payeeName: 'Shree Siddhivinayak Mandir',
   payeeNameMr: 'श्री सिद्धिविनायक मंदिर',
   mandalLocation: 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८'

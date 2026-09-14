@@ -11,8 +11,8 @@ Authenticates an administrator or mandal member.
 - **Request Body:**
   ```json
   {
-    "username": "9987942399",
-    "password": "ShivamVedhSoham"
+    "username": "admin",
+    "password": "YourSecurePassword"
   }
   ```
 - **Response (200 OK):**
@@ -21,9 +21,9 @@ Authenticates an administrator or mandal member.
     "token": "jwt_token_string",
     "user": {
       "id": "usr-admin-uuid",
-      "name": "Shivam",
-      "name_mr": "शिवम - मुख्य व्यवस्थापक",
-      "mobile": "9987942399",
+      "name": "Mandir Administrator",
+      "name_mr": "मुख्य व्यवस्थापक",
+      "mobile": "9000000000",
       "role": "ADMIN"
     }
   }
@@ -67,7 +67,7 @@ Direct QR verification endpoint for verifying receipt authenticity.
 ## 3. Manual UPI Payment & Verification Flow
 
 ### `GET /upi/config`
-Retrieves official temple UPI ID (`9029359525m@pnb`) and payee name.
+Retrieves official temple UPI ID (`siddhivinayak.mandir@upi`) and payee name.
 
 ### `POST /upi/initiate`
 Initiates a devotee payment intent.
@@ -77,9 +77,9 @@ Initiates a devotee payment intent.
     "donor_name": "Rahul Sharma",
     "donor_mobile": "9820098200",
     "amount": 501,
-    "category_code": "GANESHOTSAV_2024",
+    "category_code": "GANESHOTSAV_2026",
     "address_galli": "Sector-5, Airoli",
-    "notes": "Ganesh Chaturthi Seva"
+    "notes": "Ganesh Jayanti Seva"
   }
   ```
 - **Response (200 OK):**
@@ -87,7 +87,7 @@ Initiates a devotee payment intent.
   {
     "success": true,
     "intent_ref": "INT-2026-A1B2C3",
-    "upi_deeplink": "upi://pay?pa=9029359525m@pnb&pn=Shree%20Siddhivinayak%20Mandir&am=501&tr=INT-2026-A1B2C3&tn=INT-2026-A1B2C3"
+    "upi_deeplink": "upi://pay?pa=siddhivinayak.mandir@upi&pn=Shree%20Siddhivinayak%20Mandir&am=501&tr=INT-2026-A1B2C3&tn=INT-2026-A1B2C3"
   }
   ```
 

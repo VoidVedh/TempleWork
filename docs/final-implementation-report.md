@@ -4,7 +4,7 @@
 **Project**: Ekdant Mitra Mandal / Shree Siddhivinayak Mandir Platform  
 **Repository**: `/Users/ved/Documents/GaneshTemple`  
 **Live Production URL**: `https://ekdant-mitra-mandal.onrender.com/`  
-**Active Primary UPI ID**: `9029359525m@pnb`  
+**Active Primary UPI ID**: `siddhivinayak.mandir@upi`  
 
 ---
 
@@ -16,7 +16,7 @@ The upgrade of the Ekdant Mitra Mandal / Shree Siddhivinayak Mandir application 
 
 ## 2. Key Modules Delivered & Verified
 
-### A. Centralized UPI Payment Migration (`9029359525m@pnb`)
+### A. Centralized UPI Payment Migration (`siddhivinayak.mandir@upi`)
 - Fully replaced old UPI ID across frontend and backend environments.
 - Dynamic UPI QR code generator embeds devotee name, intent reference, and exact amount.
 - Direct Intent Initiation (`POST /api/public/donations`), UTR Submission (`POST /api/public/payments/utr`), and Receipt Verification (`GET /api/public/receipts/:id/verify`).

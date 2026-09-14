@@ -14,7 +14,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: MANDAL_UPI_ID
-        value: 9029359525m@pnb
+        value: siddhivinayak.mandir@upi
       - key: MANDAL_PAYEE_NAME
         value: Shree Siddhivinayak Mandir
       - key: FRONTEND_URL

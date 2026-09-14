@@ -542,7 +542,7 @@ export default function PublicDevoteePortalView({
                       <input
                         type="text"
                         className="form-input"
-                        placeholder={lang === 'mr' ? 'उदा. आनंद पाटील' : 'e.g. Anand Patil'}
+                        placeholder={lang === 'mr' ? 'उदा. राहुल शर्मा' : 'e.g. Rahul Sharma'}
                         value={donorName}
                         onChange={(e) => setDonorName(e.target.value)}
                         required

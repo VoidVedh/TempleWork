@@ -272,9 +272,31 @@ export function checkContributionStatus(req, res) {
       receipt = db.prepare('SELECT * FROM receipts WHERE id = ?').get(contribution.receipt_id);
     }
 
+    const maskMobile = (mob) => {
+      if (!mob || typeof mob !== 'string') return '';
+      const c = mob.replace(/\D/g, '');
+      return c.length === 10 ? `${c.slice(0, 5)}*****` : '*****';
+    };
+
+    const isStaffOrAdmin = req.user && (
+      req.user.role === 'ADMIN' || 
+      req.user.role === 'SUPER_ADMIN' || 
+      req.user.role === 'TREASURER'
+    );
+
+    const safeContribution = {
+      ...contribution,
+      donor_mobile: isStaffOrAdmin ? contribution.donor_mobile : maskMobile(contribution.donor_mobile)
+    };
+
+    const safeReceipt = receipt ? {
+      ...receipt,
+      donor_mobile: isStaffOrAdmin ? receipt.donor_mobile : maskMobile(receipt.donor_mobile)
+    } : null;
+
     res.json({
-      contribution,
-      receipt
+      contribution: safeContribution,
+      receipt: safeReceipt
     });
   } catch (err) {
     console.error('Check status error:', err);

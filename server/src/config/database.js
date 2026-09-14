@@ -433,9 +433,9 @@ export function initDatabase() {
         'Online UPI Vargani & Instant Digital Receipt System Active',
         '📱 ऑनलाईन UPI वर्गणी व डिजिटल पावती प्रणाली सुरू',
         '📱 ऑनलाइन UPI दान एवं डिजिटल रसीद सुविधा शुरू',
-        'Devotees can now directly contribute via UPI (9029359525m@pnb) and receive an official verified A5 donation certificate with QR verification.',
-        'भाविक आता अधिकृत UPI (9029359525m@pnb) द्वारे घरबसल्या वर्गणी भरू शकतात आणि अधिकृत पावती प्रमाणपत्र त्वरित मिळवू शकतात.',
-        'श्रद्धालु अब सीधे UPI (9029359525m@pnb) द्वारा दान कर सकते हैं और आधिकारिक रसीद प्राप्त कर सकते हैं।',
+        'Devotees can now directly contribute via UPI (siddhivinayak.mandir@upi) and receive an official verified A5 donation certificate with QR verification.',
+        'भाविक आता अधिकृत UPI (siddhivinayak.mandir@upi) द्वारे घरबसल्या वर्गणी भरू शकतात आणि अधिकृत पावती प्रमाणपत्र त्वरित मिळवू शकतात.',
+        'श्रद्धालु अब सीधे UPI (siddhivinayak.mandir@upi) द्वारा दान कर सकते हैं और आधिकारिक रसीद प्राप्त कर सकते हैं।',
         'NEW',
         'NEW',
         'खजिनदार कार्यालय'
@@ -530,32 +530,16 @@ export function initDatabase() {
       db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username);`);
     }
 
-    // Ensure Admin user exists with username/mobile 9987942399 and password ShivamVedhSoham
+    // Sanitize any legacy personal names from users table
     try {
-      const adminPass = process.env.ADMIN_INITIAL_PASSWORD || 'ShivamVedhSoham';
-      const adminMobile = process.env.ADMIN_MOBILE || '9987942399';
-      const adminUsername = process.env.ADMIN_USERNAME || '9987942399';
-      const adminHash = bcrypt.hashSync(adminPass, 10);
-      
-      const existingUser = db.prepare(`
-        SELECT * FROM users 
-        WHERE mobile = ? OR mobile = '8149793310' OR username = ? OR username = 'Shivam' OR LOWER(name) = 'shivam'
-      `).get(adminMobile, adminUsername);
-
-      if (existingUser) {
-        db.prepare(`
-          UPDATE users 
-          SET username = ?, mobile = ?, name = 'Shivam', name_mr = 'शिवम - मुख्य व्यवस्थापक', password_hash = ?, role = 'ADMIN', can_change_payment_status = 1, can_manage_expenses = 1, is_active = 1
-          WHERE id = ?
-        `).run(adminUsername, adminMobile, adminHash, existingUser.id);
-      } else {
-        db.prepare(`
-          INSERT INTO users (id, username, name, name_mr, mobile, password_hash, role, can_change_payment_status, can_manage_expenses, is_active, is_protected_founder)
-          VALUES ('user-admin-9987942399', ?, 'Shivam', 'शिवम - मुख्य व्यवस्थापक', ?, ?, 'ADMIN', 1, 1, 1, 1)
-        `).run(adminUsername, adminMobile, adminHash);
-      }
-    } catch (errUser) {
-      console.error('Admin user initialization note:', errUser.message);
+      db.prepare(`
+        UPDATE users 
+        SET name = COALESCE(?, 'Mandir Administrator'), 
+            name_mr = COALESCE(?, 'मुख्य व्यवस्थापक') 
+        WHERE name = 'Shivam' OR name_mr LIKE '%शिवम%'
+      `).run(process.env.ADMIN_NAME_EN, process.env.ADMIN_NAME_MR);
+    } catch (errSanitize) {
+      // Ignored if table not yet populated
     }
 
     // 2. upi_contributions migrations

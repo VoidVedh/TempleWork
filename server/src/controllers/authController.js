@@ -19,7 +19,7 @@ export async function login(req, res) {
     `).get(identifier);
 
     if (!user) {
-      return res.status(401).json({ error: 'वापरकर्ता नाव किंवा मोबाईल नंबर सापडला नाही (Invalid Username or Mobile)' });
+      return res.status(401).json({ error: 'अवैध वापरकर्ता नाव, मोबाईल किंवा पासवर्ड (Invalid credentials).' });
     }
 
     if (!user.is_active) {
@@ -28,7 +28,7 @@ export async function login(req, res) {
 
     const passwordMatches = await bcrypt.compare(password, user.password_hash);
     if (!passwordMatches) {
-      return res.status(401).json({ error: 'चुकीचा पासवर्ड (Incorrect Password)' });
+      return res.status(401).json({ error: 'अवैध वापरकर्ता नाव, मोबाईल किंवा पासवर्ड (Invalid credentials).' });
     }
 
     const token = jwt.sign(

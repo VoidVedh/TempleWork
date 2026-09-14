@@ -1,7 +1,7 @@
 import React from 'react';
 import { Heart, ShieldCheck, MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
-import { TEMPLE_ARTI_TIMINGS } from '../../config/templeConfig';
+import { TEMPLE_ARTI_TIMINGS, TEMPLE_CONTACT } from '../../config/templeConfig';
 
 export default function Footer({ onSelectView, onOpenAdminLogin }) {
   const { lang, t } = useLanguage();
@@ -64,8 +64,8 @@ export default function Footer({ onSelectView, onOpenAdminLogin }) {
         <div className="footer-col-contact">
           <h4 className="footer-section-title">{lang === 'mr' ? 'संपर्क व प्रशासन' : 'Contact & Admin'}</h4>
           <p className="footer-contact-line"><MapPin size={15} /> ऐरोली सेक्टर-५, नवी मुंबई ४००७०८</p>
-          <p className="footer-contact-line"><Phone size={15} /> +91 8149793310 / +91 9029359525</p>
-          <p className="footer-contact-line"><Mail size={15} /> siddhivinayak.mandal.airoli@gmail.com</p>
+          <p className="footer-contact-line"><Phone size={15} /> {TEMPLE_CONTACT.phoneDisplay}</p>
+          <p className="footer-contact-line"><Mail size={15} /> {TEMPLE_CONTACT.email}</p>
 
           <button className="footer-admin-btn" onClick={onOpenAdminLogin}>
             🔒 {t('adminLogin')}

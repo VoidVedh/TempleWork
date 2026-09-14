@@ -40,7 +40,7 @@ export function ensureCleanProductionDatabase() {
   const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get();
   if (userCount.count === 0) {
     const adminMobile = process.env.ADMIN_MOBILE || '9987942399';
-    const adminUsername = process.env.ADMIN_USERNAME || '9987942399';
+    const adminUsername = process.env.ADMIN_USERNAME || adminMobile;
     const adminPass = process.env.ADMIN_INITIAL_PASSWORD || 'ShivamVedhSoham';
     const passwordHash = bcrypt.hashSync(adminPass, 10);
 
@@ -52,8 +52,8 @@ export function ensureCleanProductionDatabase() {
     userStmt.run(
       'user-founder-admin',
       adminUsername,
-      process.env.ADMIN_NAME_EN || 'Shivam',
-      process.env.ADMIN_NAME_MR || 'शिवम - मुख्य व्यवस्थापक',
+      process.env.ADMIN_NAME_EN || 'Mandir Administrator',
+      process.env.ADMIN_NAME_MR || 'मुख्य व्यवस्थापक',
       adminMobile,
       passwordHash,
       'ADMIN',
@@ -64,7 +64,7 @@ export function ensureCleanProductionDatabase() {
       new Date().toISOString()
     );
 
-    console.log(`👑 Legitimate Founder Administrator account initialized: ${adminMobile}`);
+    console.log(`👑 Founder Administrator account initialized: ${adminMobile}`);
   }
 
   console.log('✨ Production Database verified: Clean state active.');

@@ -28,7 +28,7 @@ Shree Siddhivinayak Mandir runs as a unified full-stack Node.js application:
    - `NODE_ENV`: `production`
    - `PORT`: `10000`
    - `JWT_SECRET`: `<your-random-32-char-secret>`
-   - `MANDAL_UPI_ID`: `9029359525m@pnb`
+   - `MANDAL_UPI_ID`: `siddhivinayak.mandir@upi`
    - `MANDAL_PAYEE_NAME`: `Shree Siddhivinayak Mandir`
 5. **Disk**:
    - Name: `mandal-persistent-data`

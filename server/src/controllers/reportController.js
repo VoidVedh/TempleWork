@@ -142,6 +142,15 @@ export function getPaymentModes(req, res) {
   }
 }
 
+function escapeCsvCell(val) {
+  let str = (val ?? '').toString();
+  // Neutralize spreadsheet formula execution triggers (=, +, -, @, \t, \r)
+  if (/^[=+\-@\t\r]/.test(str)) {
+    str = "'" + str;
+  }
+  return `"${str.replace(/"/g, '""')}"`;
+}
+
 export function exportReceiptsCSV(req, res) {
   try {
     const receipts = db.prepare(`
@@ -154,8 +163,7 @@ export function exportReceiptsCSV(req, res) {
     let csvContent = 'पावती क्र. (Receipt No),दाता नाव (Donor Name),मोबाईल (Mobile),पत्ता (Address),रक्कम (Amount),अक्षरी (In Words),पेमेंट मोड (Payment Mode),UTR/Ref,स्थिती (Status),नोंद (Notes),कार्यकर्ता (Collector),दिनांक (Issue Date)\n';
 
     receipts.forEach(r => {
-      const escape = (val) => `"${(val || '').toString().replace(/"/g, '""')}"`;
-      csvContent += `${escape(r.receipt_no)},${escape(r.donor_name)},${escape(r.donor_mobile)},${escape(r.address_galli)},${r.amount},${escape(r.amount_in_words)},${escape(r.payment_mode)},${escape(r.upi_ref_no || '')},${escape(r.payment_status)},${escape(r.notes)},${escape(r.collector_name)},${escape(r.issue_date)}\n`;
+      csvContent += `${escapeCsvCell(r.receipt_no)},${escapeCsvCell(r.donor_name)},${escapeCsvCell(r.donor_mobile)},${escapeCsvCell(r.address_galli)},${r.amount},${escapeCsvCell(r.amount_in_words)},${escapeCsvCell(r.payment_mode)},${escapeCsvCell(r.upi_ref_no || '')},${escapeCsvCell(r.payment_status)},${escapeCsvCell(r.notes)},${escapeCsvCell(r.collector_name)},${escapeCsvCell(r.issue_date)}\n`;
     });
 
     logAuditEvent(
@@ -186,8 +194,7 @@ export function exportExpensesCSV(req, res) {
     let csvContent = 'व्हाउचर क्र. (Voucher No),खर्चाचे नाव (Title),वर्गवारी (Category),रक्कम (Amount),कोणाला दिले (Paid To),पेमेंट पद्धत (Payment Method),अधिकार (Authorized By),नोंदणीकर्ता (Recorded By),तारीख (Date),कारण (Reason)\n';
 
     expenses.forEach(e => {
-      const escape = (val) => `"${(val || '').toString().replace(/"/g, '""')}"`;
-      csvContent += `${escape(e.voucher_no)},${escape(e.title)},${escape(e.category)},${e.amount},${escape(e.paid_to)},${escape(e.payment_method)},${escape(e.authorized_by)},${escape(e.recorder_name)},${escape(e.expense_date)},${escape(e.reason)}\n`;
+      csvContent += `${escapeCsvCell(e.voucher_no)},${escapeCsvCell(e.title)},${escapeCsvCell(e.category)},${e.amount},${escapeCsvCell(e.paid_to)},${escapeCsvCell(e.payment_method)},${escapeCsvCell(e.authorized_by)},${escapeCsvCell(e.recorder_name)},${escapeCsvCell(e.expense_date)},${escapeCsvCell(e.reason)}\n`;
     });
 
     logAuditEvent(
@@ -218,8 +225,7 @@ export function exportAuditLogsCSV(req, res) {
     let csvContent = 'आयडी (ID),क्रिया (Action),तपशील (Details),वापरकर्ता (User),भूमिका (Role),वेळ (Timestamp)\n';
 
     logs.forEach(l => {
-      const escape = (val) => `"${(val || '').toString().replace(/"/g, '""')}"`;
-      csvContent += `${escape(l.id)},${escape(l.action)},${escape(l.details)},${escape(l.user_name)},${escape(l.user_role)},${escape(l.created_at)}\n`;
+      csvContent += `${escapeCsvCell(l.id)},${escapeCsvCell(l.action)},${escapeCsvCell(l.details)},${escapeCsvCell(l.user_name)},${escapeCsvCell(l.user_role)},${escapeCsvCell(l.created_at)}\n`;
     });
 
     logAuditEvent(

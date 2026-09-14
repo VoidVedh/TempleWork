@@ -38,3 +38,11 @@ export function getDailyScheduleByLanguage(lang = 'mr') {
   }));
 }
 
+export const TEMPLE_CONTACT = {
+  phoneDisplay: '+91 98000 00000 / +91 98000 00001',
+  phonePrimary: '+91 98000 00000',
+  phoneSecondary: '+91 98000 00001',
+  email: 'contact@shreesiddhivinayak.org',
+  whatsappNumber: '919800000000'
+};
+

@@ -209,6 +209,10 @@ export function deleteMember(req, res) {
 }
 
 export function resetDemoData(req, res) {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ error: 'डेमो डेटा रीसेट केवळ विकास वातावरणासाठी उपलब्ध आहे (Demo reset is disabled in production).' });
+  }
+
   try {
     seedInitialData();
     logAuditEvent('RESET_DATA', 'संपूर्ण डेमो डेटा रीसेट करण्यात आला (Database reset to baseline).', req.user);

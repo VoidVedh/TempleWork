@@ -91,7 +91,7 @@ testDb.exec(`
 // Insert Admin Verifier
 testDb.prepare(`
   INSERT INTO users (id, name, name_mr, mobile, password_hash, role, can_change_payment_status, can_manage_expenses, is_active, is_protected_founder)
-  VALUES ('admin-1', 'Anand Naik', 'आनंद नाईक', '8149793310', 'hash', 'ADMIN', 1, 1, 1, 1)
+  VALUES ('admin-1', 'Admin Verifier', 'मुख्य पडताळणी विश्वस्त', '9800000001', 'hash', 'ADMIN', 1, 1, 1, 1)
 `).run();
 
 console.log('🧪 Starting Security Verification Test Suite (10 Cases)...\n');
@@ -150,7 +150,7 @@ testDb.prepare(`
       rejection_reason = 'बँक खात्यात रक्कम प्राप्त झालेली नाही',
       verified_at = CURRENT_TIMESTAMP,
       verified_by_id = 'admin-1',
-      verified_by_name = 'Anand Naik'
+      verified_by_name = 'Admin Verifier'
   WHERE id = ?
 `).run(intentId1);
 
@@ -171,7 +171,7 @@ const realUtr = '423456789012';
 
 testDb.prepare(`
   INSERT INTO upi_contributions (id, intent_ref, donor_name, donor_mobile, amount, upi_ref_no, verification_status, created_at, submitted_at)
-  VALUES (?, ?, 'Suresh Patil', '9822055555', 500, ?, 'PENDING_VERIFICATION', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+  VALUES (?, ?, 'Devotee Suresh', '9822055555', 500, ?, 'PENDING_VERIFICATION', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 `).run(intentId2, intentRef2, realUtr);
 
 // Perform atomic verification transaction
@@ -203,7 +203,7 @@ const verifyTx = testDb.transaction((contributionId, adminId, adminName) => {
   return { receiptId, receipt_no };
 });
 
-const result4 = verifyTx(intentId2, 'admin-1', 'Anand Naik');
+const result4 = verifyTx(intentId2, 'admin-1', 'Admin Verifier');
 const stats4 = getDashboardCollection();
 assert.strictEqual(stats4.total, 500, 'Collection must now be exactly ₹500');
 assert.strictEqual(stats4.count, 1, 'Receipt count must now be exactly 1');
@@ -235,7 +235,7 @@ console.log('  ✅ CASE 5 PASSED: Unique UTR constraint successfully blocked reu
 console.log('▶ TEST CASE 6: Double Verification Idempotency Guard');
 let secondVerifyError = null;
 try {
-  verifyTx(intentId2, 'admin-1', 'Anand Naik');
+  verifyTx(intentId2, 'admin-1', 'Admin Verifier');
 } catch (err) {
   secondVerifyError = err;
 }
@@ -285,7 +285,7 @@ let admin1Success = false;
 let admin2Success = false;
 
 try {
-  verifyTx(intentId3, 'admin-1', 'Anand Naik');
+  verifyTx(intentId3, 'admin-1', 'Admin Verifier');
   admin1Success = true;
 } catch (e) {
   admin1Success = false;

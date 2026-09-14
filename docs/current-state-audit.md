@@ -24,7 +24,7 @@
 1. **Public Devotee Portal**:
    - Bilingual support (मराठी / English) via context.
    - Campaign cards (Ganeshotsav 2024, Mandir Development, Mahaprasad, General).
-   - Real-time UPI QR generation & Deep Link intents (`9029359525m@pnb`).
+   - Real-time UPI QR generation & Deep Link intents (`siddhivinayak.mandir@upi`).
    - UTR submission & payment status tracker.
    - Public receipt search & certificate verification.
    - Public donor list with privacy protection.

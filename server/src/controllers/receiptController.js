@@ -217,15 +217,21 @@ export function searchPublicReceipts(req, res) {
 
     if (receipt_no && mobile) {
       const cleanMob = mobile.replace(/\D/g, '');
-      query += ' AND (receipt_no = ? OR id = ?) AND donor_mobile LIKE ?';
-      params.push(receipt_no.trim(), receipt_no.trim(), `%${cleanMob}%`);
+      if (cleanMob.length < 10) {
+        return res.status(400).json({ error: 'कृपया संपूर्ण १०-अंकी मोबाईल नंबर टाका (Full 10-digit mobile required).' });
+      }
+      query += ' AND (receipt_no = ? OR id = ?) AND donor_mobile = ?';
+      params.push(receipt_no.trim(), receipt_no.trim(), cleanMob);
     } else if (receipt_no) {
       query += ' AND (receipt_no = ? OR id = ?)';
       params.push(receipt_no.trim(), receipt_no.trim());
     } else if (mobile) {
       const cleanMob = mobile.replace(/\D/g, '');
-      query += ' AND donor_mobile LIKE ?';
-      params.push(`%${cleanMob}%`);
+      if (cleanMob.length < 10) {
+        return res.status(400).json({ error: 'कृपया संपूर्ण १०-अंकी मोबाईल नंबर टाका (Full 10-digit mobile required).' });
+      }
+      query += ' AND donor_mobile = ?';
+      params.push(cleanMob);
     }
 
     query += ' ORDER BY issue_date DESC LIMIT 10';
@@ -236,7 +242,28 @@ export function searchPublicReceipts(req, res) {
       return res.status(404).json({ error: 'कोणतीही पडताळलेली पावती आढळली नाही (No verified receipt found matching criteria).' });
     }
 
-    res.json({ receipts });
+    // Mask PII before returning public results
+    const maskMobile = (mob) => {
+      if (!mob || typeof mob !== 'string') return '';
+      const c = mob.replace(/\D/g, '');
+      return c.length === 10 ? `${c.slice(0, 5)}*****` : '*****';
+    };
+
+    const sanitizedReceipts = receipts.map(r => ({
+      id: r.id,
+      receipt_no: r.receipt_no,
+      donor_name: r.donor_name,
+      donor_mobile: maskMobile(r.donor_mobile),
+      amount: r.amount,
+      amount_in_words: r.amount_in_words,
+      payment_mode: r.payment_mode,
+      payment_status: r.payment_status,
+      category_code: r.category_code,
+      issue_date: r.issue_date,
+      marathi_day: r.marathi_day
+    }));
+
+    res.json({ receipts: sanitizedReceipts });
   } catch (err) {
     console.error('Search public receipts error:', err);
     res.status(500).json({ error: 'Failed to search receipts.' });

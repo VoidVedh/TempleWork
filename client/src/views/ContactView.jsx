@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle, ExternalLink, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { TEMPLE_CONTACT } from '../config/templeConfig';
 
 export default function ContactView() {
   const { lang, t } = useLanguage();
@@ -17,7 +18,7 @@ export default function ContactView() {
 
     // Build WhatsApp message for instant response
     const waText = encodeURIComponent(`🚩 *श्री सिद्धिविनायक मंदिर - भाविक चौकशी*\n👤 नाव: ${formName}\n📱 मोबाईल: ${formMobile}\n📌 विषय: ${formSubject}\n💬 संदेश: ${formMessage}`);
-    window.open(`https://wa.me/918149793310?text=${waText}`, '_blank');
+    window.open(`https://wa.me/${TEMPLE_CONTACT.whatsappNumber}?text=${waText}`, '_blank');
     setSubmitted(true);
   };
 
@@ -60,7 +61,7 @@ export default function ContactView() {
             <div className="contact-icon-circle"><Phone size={20} /></div>
             <div>
               <h4>{t('phoneLabel')}</h4>
-              <p>+91 8149793310 / +91 9029359525</p>
+              <p>{TEMPLE_CONTACT.phoneDisplay}</p>
               <span className="contact-subtext">{lang === 'mr' ? 'सकाळी १० ते संध्याकाळी ८ पर्यंत' : '10:00 AM - 08:00 PM'}</span>
             </div>
           </div>
@@ -69,7 +70,7 @@ export default function ContactView() {
             <div className="contact-icon-circle"><Mail size={20} /></div>
             <div>
               <h4>{t('emailLabel')}</h4>
-              <p>siddhivinayak.mandal.airoli@gmail.com</p>
+              <p>{TEMPLE_CONTACT.email}</p>
             </div>
           </div>
 

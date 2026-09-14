@@ -18,11 +18,16 @@ import { getUserNotifications, markNotificationRead, markAllNotificationsRead } 
 import { authenticateToken, optionalAuth, requireAdmin, requireTreasurer, requireExpenseAuthority, requirePaymentStatusAuthority } from './middlewares/authMiddleware.js';
 import { upload } from './middlewares/uploadMiddleware.js';
 
+import { loginLimiter, donationIntentLimiter, utrSubmissionLimiter, receiptSearchLimiter } from './middlewares/rateLimiter.js';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+
+// Defensive Blue Team Hardening: Disable Express header fingerprint
+app.disable('x-powered-by');
 
 // CORS Configuration
 const allowedOrigins = process.env.NODE_ENV === 'production'
@@ -34,12 +39,17 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
     ].filter(Boolean)
   : ['http://localhost:5173', 'http://localhost:3000'];
 
-// Security HTTP headers
+// Comprehensive Security HTTP headers
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  
+  if (process.env.NODE_ENV === 'production' || req.secure || req.headers['x-forwarded-proto'] === 'https') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  }
   next();
 });
 
@@ -70,14 +80,14 @@ ensureCleanProductionDatabase();
 // 0. Public Devotee & Transparency Routes (No Authentication Required)
 app.get('/api/public/stats', getPublicStats);
 app.get('/api/public/campaigns', getPublicCampaigns);
-app.get('/api/public/receipts/search', searchPublicReceipts);
+app.get('/api/public/receipts/search', receiptSearchLimiter, searchPublicReceipts);
 app.get('/api/public/receipts/:id/verify', verifyPublicReceipt);
-app.post('/api/public/donations', initiatePaymentIntent);
-app.post('/api/public/payments/utr', submitUpiContribution);
+app.post('/api/public/donations', donationIntentLimiter, initiatePaymentIntent);
+app.post('/api/public/payments/utr', utrSubmissionLimiter, submitUpiContribution);
 app.get('/api/public/payment-status/:identifier', checkContributionStatus);
 
 // 1. Auth Routes
-app.post('/api/auth/login', login);
+app.post('/api/auth/login', loginLimiter, login);
 app.get('/api/auth/me', authenticateToken, getCurrentUser);
 app.post('/api/auth/logout', authenticateToken, logout);
 
@@ -124,8 +134,8 @@ app.get('/api/audit-logs', authenticateToken, requireAdmin, getAuditLogs);
 
 // 8. UPI Contribution Routes
 app.get('/api/upi/config', getUpiConfig);
-app.post('/api/upi/initiate', initiatePaymentIntent);
-app.post('/api/upi/submit-utr', submitUpiContribution);
+app.post('/api/upi/initiate', donationIntentLimiter, initiatePaymentIntent);
+app.post('/api/upi/submit-utr', utrSubmissionLimiter, submitUpiContribution);
 app.get('/api/upi/status/:identifier', checkContributionStatus);
 app.get('/api/upi/pending', authenticateToken, requireAdmin, listPendingContributions);
 app.get('/api/upi/all', authenticateToken, requireAdmin, listAllContributions);
@@ -187,11 +197,15 @@ app.get('*', (req, res, next) => {
   res.status(404).send('SPA index.html not found. Please ensure frontend is built.');
 });
 
-// Error handling middleware
+// Error handling middleware (Safe, non-leaking)
 app.use((err, req, res, next) => {
   console.error('Server error:', err.message);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal server error occurred.'
+  const isProd = process.env.NODE_ENV === 'production';
+  const status = err.status || 500;
+  res.status(status).json({
+    error: isProd && status === 500 
+      ? 'सर्व्हर त्रुटी उद्भवली. कृपया नंतर प्रयत्न करा (Internal server error occurred).' 
+      : (err.message || 'Internal server error occurred.')
   });
 });
 
