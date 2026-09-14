@@ -29,6 +29,15 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
   ? [process.env.FRONTEND_URL, process.env.CLIENT_ORIGIN].filter(Boolean)
   : ['http://localhost:5173', 'http://localhost:3000'];
 
+// Security HTTP headers
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) callback(null, true);
