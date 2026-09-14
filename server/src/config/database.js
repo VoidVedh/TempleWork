@@ -18,6 +18,7 @@ const db = new Database(dbPath);
 
 // Enable WAL mode for concurrency
 db.pragma('journal_mode = WAL');
+db.pragma('busy_timeout = 5000');
 
 export function initDatabase() {
   // 1. Users table

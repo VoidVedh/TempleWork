@@ -26,7 +26,12 @@ const PORT = process.env.PORT || 5001;
 
 // CORS Configuration
 const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? [process.env.FRONTEND_URL, process.env.CLIENT_ORIGIN].filter(Boolean)
+  ? [
+      process.env.FRONTEND_URL,
+      process.env.CLIENT_ORIGIN,
+      'https://ekdant-mitra-mandal.onrender.com',
+      'https://shree-siddhivinayak-mandir.onrender.com'
+    ].filter(Boolean)
   : ['http://localhost:5173', 'http://localhost:3000'];
 
 // Security HTTP headers
