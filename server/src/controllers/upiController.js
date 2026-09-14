@@ -60,7 +60,7 @@ export function initiatePaymentIntent(req, res) {
       return res.status(400).json({ error: 'कृपया वैध वर्गणी रक्कम भरा (Amount must be greater than 0).' });
     }
 
-    const currentYear = MANDAL_CONFIG.year || 2024;
+    const currentYear = new Date().getFullYear();
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
     const intent_ref = `INT-${currentYear}-${randomSuffix}`;
     const id = crypto.randomUUID();
@@ -175,7 +175,7 @@ export function submitUpiContribution(req, res) {
         return res.status(400).json({ error: 'कृपया वैध वर्गणी रक्कम भरा.' });
       }
 
-      const currentYear = MANDAL_CONFIG.year || 2024;
+      const currentYear = new Date().getFullYear();
       const genRef = `INT-${currentYear}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
       const newId = crypto.randomUUID();
 
@@ -351,10 +351,14 @@ export function verifyContribution(req, res) {
       throw err;
     }
 
-    // 2. Generate Next Sequential Receipt Number
-    const currentYear = MANDAL_CONFIG.year || 2024;
-    const countRow = db.prepare('SELECT COUNT(*) as count FROM receipts').get();
-    const nextSeq = (countRow.count + 1).toString().padStart(4, '0');
+    // 2. Generate Next Sequential Receipt Number (B1: Dynamic year, B2: MAX() sequential number)
+    const currentYear = new Date().getFullYear();
+    const maxRow = db.prepare(`
+      SELECT MAX(CAST(SUBSTR(receipt_no, 10) AS INTEGER)) as maxNum 
+      FROM receipts 
+      WHERE receipt_no LIKE ?
+    `).get(`EMM-${currentYear}-%`);
+    const nextSeq = ((maxRow?.maxNum || 0) + 1).toString().padStart(4, '0');
     const receipt_no = `EMM-${currentYear}-${nextSeq}`;
 
     const receiptId = crypto.randomUUID();
@@ -385,7 +389,7 @@ export function verifyContribution(req, res) {
       contribution.amount,
       inWords,
       paymentModeLabel,
-      contribution.category_code || 'GANESHOTSAV_2024',
+      contribution.category_code || `GANESHOTSAV_${currentYear}`,
       contribution.upi_ref_no,
       receiptNotes,
       collector_id,

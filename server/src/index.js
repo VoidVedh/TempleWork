@@ -10,8 +10,8 @@ import { login, getCurrentUser, logout } from './controllers/authController.js';
 import { getDashboardStats, getPublicStats, getPublicCampaigns } from './controllers/dashboardController.js';
 import { createReceipt, listReceipts, getReceiptById, updateReceiptStatus, searchPublicReceipts, verifyPublicReceipt, cancelReceipt } from './controllers/receiptController.js';
 import { createExpense, listExpenses, deleteExpense } from './controllers/expenseController.js';
-import { getMembersAndLeaderboard, createMember, updateMember, deleteMember } from './controllers/memberController.js';
-import { getFinancialReports, exportReceiptsCSV, exportExpensesCSV } from './controllers/reportController.js';
+import { getMembersAndLeaderboard, getLeaderboard, createMember, updateMember, deleteMember } from './controllers/memberController.js';
+import { getFinancialReports, getCategoryBreakdown, getPaymentModes, exportReceiptsCSV, exportExpensesCSV } from './controllers/reportController.js';
 import { getAuditLogs } from './controllers/auditController.js';
 import { getUpiConfig, initiatePaymentIntent, submitUpiContribution, checkContributionStatus, listPendingContributions, listAllContributions, verifyContribution, rejectContribution } from './controllers/upiController.js';
 import { getUserNotifications, markNotificationRead, markAllNotificationsRead } from './controllers/notificationController.js';
@@ -24,9 +24,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// CORS Configuration - Permissive for same-origin and mobile webviews
+// CORS Configuration
+const allowedOrigins = process.env.NODE_ENV === 'production'
+  ? [process.env.FRONTEND_URL, process.env.CLIENT_ORIGIN].filter(Boolean)
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
 app.use(cors({
-  origin: true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+    else callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
@@ -82,27 +89,15 @@ app.delete('/api/expenses/:id', authenticateToken, requireExpenseAuthority, dele
 
 // 5. Members & Leaderboard Routes
 app.get('/api/members', authenticateToken, getMembersAndLeaderboard);
-app.get('/api/members/leaderboard', authenticateToken, (req, res) => {
-  getMembersAndLeaderboard(req, {
-    json: (data) => res.json({ leaderboard: data.leaderboard })
-  });
-});
+app.get('/api/members/leaderboard', authenticateToken, getLeaderboard);
 app.post('/api/members', authenticateToken, requireAdmin, createMember);
 app.put('/api/members/:id', authenticateToken, requireAdmin, updateMember);
 app.delete('/api/members/:id', authenticateToken, requireAdmin, deleteMember);
 
 // 6. Reports & CSV Routes
 app.get('/api/reports/financial', authenticateToken, getFinancialReports);
-app.get('/api/reports/category-breakdown', authenticateToken, (req, res) => {
-  getFinancialReports(req, {
-    json: (data) => res.json({ categories: data.category_breakdown })
-  });
-});
-app.get('/api/reports/payment-modes', authenticateToken, (req, res) => {
-  getFinancialReports(req, {
-    json: (data) => res.json({ payment_modes: data.payment_modes })
-  });
-});
+app.get('/api/reports/category-breakdown', authenticateToken, getCategoryBreakdown);
+app.get('/api/reports/payment-modes', authenticateToken, getPaymentModes);
 app.get('/api/reports/receipts-csv', authenticateToken, exportReceiptsCSV);
 app.get('/api/reports/expenses-csv', authenticateToken, exportExpensesCSV);
 app.get('/api/reports/export/receipts', authenticateToken, exportReceiptsCSV);
@@ -117,7 +112,7 @@ app.post('/api/upi/initiate', initiatePaymentIntent);
 app.post('/api/upi/submit-utr', submitUpiContribution);
 app.get('/api/upi/status/:identifier', checkContributionStatus);
 app.get('/api/upi/pending', authenticateToken, requireAdmin, listPendingContributions);
-app.get('/api/upi/all', authenticateToken, listAllContributions);
+app.get('/api/upi/all', authenticateToken, requireAdmin, listAllContributions);
 app.post('/api/upi/:id/verify', authenticateToken, requireAdmin, verifyContribution);
 app.post('/api/upi/:id/reject', authenticateToken, requireAdmin, rejectContribution);
 
@@ -186,6 +181,9 @@ app.use((err, req, res, next) => {
 
 // Start Server on 0.0.0.0 for Cloud / Docker / Render compatibility
 const HOST = '0.0.0.0';
-app.listen(PORT, HOST, () => {
+const server = app.listen(PORT, HOST, () => {
   console.log(`🚩 Shree Siddhivinayak Mandir Production API Server running on http://${HOST}:${PORT}`);
 });
+
+export default app;
+export { app };

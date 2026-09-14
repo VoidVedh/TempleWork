@@ -18,7 +18,7 @@ export async function apiRequest(endpoint, options = {}) {
     headers
   });
 
-  if (response.status === 401) {
+  if (response.status === 401 && token) {
     localStorage.removeItem('ekdant_auth_token');
     localStorage.removeItem('ekdant_user');
     window.dispatchEvent(new Event('auth_unauthorized'));

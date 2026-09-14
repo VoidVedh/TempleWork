@@ -118,7 +118,7 @@ export const translations = {
     emailLabel: "अधिकृत ईमेल:",
     timingsLabel: "दर्शन वेळ:",
     dailyTimings: "दररोज सकाळी ०६:०० ते रात्री १०:००",
-    aartiTimings: "सकाळची आरती: ०७:३० AM | संध्याकाळची आरती: ०८:०० PM"
+    aartiTimings: "सकाळची आरती: ०८:०० AM | संध्याकाळची आरती: ०८:०० PM"
   },
 
   en: {
@@ -240,7 +240,7 @@ export const translations = {
     emailLabel: "Official Email:",
     timingsLabel: "Darshan Timings:",
     dailyTimings: "Daily: 06:00 AM to 10:00 PM",
-    aartiTimings: "Morning Aarti: 07:30 AM | Evening Aarti: 08:00 PM"
+    aartiTimings: "Morning Aarti: 08:00 AM | Evening Aarti: 08:00 PM"
   },
 
   hi: {
@@ -362,6 +362,6 @@ export const translations = {
     emailLabel: "आधिकारिक ईमेल:",
     timingsLabel: "दर्शन समय:",
     dailyTimings: "प्रतिदिन प्रातः ०६:०० से रात्रि १०:००",
-    aartiTimings: "प्रातः आरती: ०७:३० AM | संध्या आरती: ०८:०० PM"
+    aartiTimings: "प्रातः आरती: ०८:०० AM | संध्या आरती: ०८:०० PM"
   }
 };

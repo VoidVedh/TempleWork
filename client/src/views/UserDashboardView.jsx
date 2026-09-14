@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  User, Calendar, Receipt, Bell, Shield, Download, 
-  CheckCircle, Clock, AlertCircle, Sparkles, ChevronRight, LogOut 
-} from 'lucide-react';
+import { User, Receipt, Bell, Shield } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../utils/api';
@@ -31,11 +28,8 @@ export default function UserDashboardView({ onNavigateToContribute, onLogout }) 
       setLoading(true);
       // Fetch user receipts if authenticated
       try {
-        const rcptRes = await apiRequest('/receipts?limit=50');
-        const list = rcptRes.receipts || [];
-        // Filter by user mobile or name
-        const myRcpts = list.filter(r => r.donor_mobile === user.mobile || r.collector_id === user.id);
-        setUserReceipts(myRcpts);
+        const rcptRes = await apiRequest(`/receipts?donor_mobile=${encodeURIComponent(user.mobile)}&limit=50`);
+        setUserReceipts(rcptRes.receipts || []);
       } catch (e) {}
 
       // Fetch notifications
@@ -126,140 +120,7 @@ export default function UserDashboardView({ onNavigateToContribute, onLogout }) 
         })}
       </div>
 
-      {/* Tab 1: Overview */}
-      {activeTab === 'overview' && (
-        <div className="user-tab-content animate-fade-in">
-          <div className="user-overview-grid">
-            {/* Recent Registered Events Card */}
-            <div className="overview-card">
-              <div className="overview-card-header">
-                <h3>📅 {lang === 'mr' ? 'आगामी उत्सव उपस्थिती' : 'Upcoming Registrations'}</h3>
-                {onNavigateToEvents && (
-                  <button className="btn-text-link" onClick={onNavigateToEvents}>
-                    {lang === 'mr' ? 'सर्व कार्यक्रम ->' : 'View All Events ->'}
-                  </button>
-                )}
-              </div>
-
-              {registrations.length === 0 ? (
-                <div className="empty-sub-state">
-                  <p>{t('noRegistrationsYet')}</p>
-                  {onNavigateToEvents && (
-                    <button className="btn-secondary btn-sm mt-2" onClick={onNavigateToEvents}>
-                      {lang === 'mr' ? 'कार्यक्रम पहा व नोंदणी करा' : 'Browse Events'}
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <div className="registrations-compact-list">
-                  {registrations.slice(0, 3).map(r => (
-                    <div key={r.id} className="registration-compact-item">
-                      <div className="reg-item-meta">
-                        <h4>{r.title_mr || r.title_en}</h4>
-                        <div className="reg-item-sub">📅 {r.date} | ⏰ {r.start_time} | 📍 {r.venue_mr}</div>
-                      </div>
-                      <div className="reg-token-badge">{r.qr_code_token}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Official Receipts Card */}
-            <div className="overview-card">
-              <div className="overview-card-header">
-                <h3>📜 {lang === 'mr' ? 'माझी अधिकृत पावती प्रमाणपत्रे' : 'My Verified Receipts'}</h3>
-                {onNavigateToContribute && (
-                  <button className="btn-text-link" onClick={onNavigateToContribute}>
-                    {lang === 'mr' ? '+ वर्गणी भरा' : '+ Pay Vargani'}
-                  </button>
-                )}
-              </div>
-
-              {userReceipts.length === 0 ? (
-                <div className="empty-sub-state">
-                  <p>{t('noContributionsYet')}</p>
-                </div>
-              ) : (
-                <div className="receipts-compact-list">
-                  {userReceipts.slice(0, 3).map(r => (
-                    <div key={r.id} className="receipt-compact-item" onClick={() => setSelectedReceipt(r)}>
-                      <div className="receipt-item-info">
-                        <span className="rcpt-no">{r.receipt_no}</span>
-                        <span className="rcpt-donor">{r.donor_name}</span>
-                        <span className="rcpt-date">📅 {r.issue_date ? r.issue_date.slice(0, 10) : ''}</span>
-                      </div>
-                      <div className="receipt-item-amount">
-                        <span className="amt-val">₹ {Number(r.amount).toLocaleString('en-IN')}</span>
-                        <span className="amt-badge">{r.payment_status}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab 2: My Event Registrations */}
-      {activeTab === 'events' && (
-        <div className="user-tab-content animate-fade-in">
-          {registrations.length === 0 ? (
-            <div className="empty-state-card">
-              <Calendar size={48} className="empty-state-icon" />
-              <h3>{t('noRegistrationsYet')}</h3>
-              {onNavigateToEvents && (
-                <button className="btn-primary mt-3" onClick={onNavigateToEvents}>
-                  {lang === 'mr' ? 'उत्सव व कार्यक्रम पहा' : 'View Events'}
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="registrations-full-grid">
-              {registrations.map(r => (
-                <div key={r.id} className="digital-pass-card">
-                  <div className="pass-card-top">
-                    <div>
-                      <span className="pass-badge-mandal">🚩 श्री सिद्धिविनायक मंदिर</span>
-                      <h3 className="pass-event-title">{r.title_mr || r.title_en}</h3>
-                    </div>
-                    <div className="pass-qr-token">{r.qr_code_token}</div>
-                  </div>
-
-                  <div className="pass-card-details">
-                    <div className="pass-detail-cell">
-                      <span className="cell-lbl">{lang === 'mr' ? 'उपस्थिती नाव:' : 'Attendee:'}</span>
-                      <span className="cell-val">{r.attendee_name}</span>
-                    </div>
-
-                    <div className="pass-detail-cell">
-                      <span className="cell-lbl">{lang === 'mr' ? 'व्यक्ती संख्या:' : 'Guests:'}</span>
-                      <span className="cell-val">{r.guests_count} {lang === 'mr' ? 'व्यक्ती' : 'Person(s)'}</span>
-                    </div>
-
-                    <div className="pass-detail-cell">
-                      <span className="cell-lbl">{lang === 'mr' ? 'तारीख व वेळ:' : 'Date & Time:'}</span>
-                      <span className="cell-val">{r.date} ({r.start_time})</span>
-                    </div>
-
-                    <div className="pass-detail-cell">
-                      <span className="cell-lbl">{lang === 'mr' ? 'ठिकाण:' : 'Venue:'}</span>
-                      <span className="cell-val">{r.venue_mr}</span>
-                    </div>
-                  </div>
-
-                  <div className="pass-card-bottom">
-                    <span className="pass-status-confirmed">✅ {lang === 'mr' ? 'नोंदणी निश्चित (Confirmed)' : 'Confirmed Pass'}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab 3: My Receipts */}
+      {/* Tab 1: My Receipts */}
       {activeTab === 'receipts' && (
         <div className="user-tab-content animate-fade-in">
           {userReceipts.length === 0 ? (
@@ -341,6 +202,7 @@ export default function UserDashboardView({ onNavigateToContribute, onLogout }) 
       {/* Receipt Certificate Preview Modal */}
       {selectedReceipt && (
         <ReceiptCertificateModal
+          isOpen={Boolean(selectedReceipt)}
           receipt={selectedReceipt}
           onClose={() => setSelectedReceipt(null)}
         />

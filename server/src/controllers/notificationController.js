@@ -39,6 +39,13 @@ export function getUserNotifications(req, res) {
 export function markNotificationRead(req, res) {
   try {
     const { id } = req.params;
+    const notification = db.prepare('SELECT * FROM notifications WHERE id = ?').get(id);
+    if (!notification) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+    if (notification.user_id && notification.user_id !== req.user?.id) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
     db.prepare('UPDATE notifications SET is_read = 1 WHERE id = ?').run(id);
     res.json({ success: true });
   } catch (err) {

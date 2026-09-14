@@ -9,32 +9,34 @@ function getMarathiDay(date) {
   return `वार: ${MARATHI_WEEKDAYS[dayIndex]}`;
 }
 
-function syncDonorEntity(name, mobile, address_galli, amount, isPaid) {
+function syncDonorEntity(name, mobile, address_galli, amountDelta, isPaid, countDelta = null) {
   if (!mobile || !name) return;
   const cleanMobile = mobile.replace(/\D/g, '');
   if (cleanMobile.length < 10) return;
 
   const existing = db.prepare('SELECT * FROM donors WHERE mobile = ?').get(cleanMobile);
   const now = new Date().toISOString();
+  const numDelta = isPaid ? parseFloat(amountDelta) || 0 : 0;
+  const numCountDelta = countDelta !== null ? countDelta : (isPaid ? 1 : 0);
 
   if (existing) {
     db.prepare(`
       UPDATE donors
       SET name = COALESCE(?, name),
           address_galli = COALESCE(?, address_galli),
-          total_contributions = total_contributions + ?,
-          contributions_count = contributions_count + ?,
+          total_contributions = MAX(0, total_contributions + ?),
+          contributions_count = MAX(0, contributions_count + ?),
           updated_at = ?
       WHERE mobile = ?
     `).run(
       name.trim(),
       address_galli ? address_galli.trim() : null,
-      isPaid ? amount : 0,
-      isPaid ? 1 : 0,
+      numDelta,
+      numCountDelta,
       now,
       cleanMobile
     );
-  } else {
+  } else if (isPaid && numDelta > 0) {
     db.prepare(`
       INSERT INTO donors (id, name, mobile, address_galli, total_contributions, contributions_count, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -43,12 +45,22 @@ function syncDonorEntity(name, mobile, address_galli, amount, isPaid) {
       name.trim(),
       cleanMobile,
       address_galli ? address_galli.trim() : '',
-      isPaid ? amount : 0,
-      isPaid ? 1 : 0,
+      numDelta,
+      Math.max(1, numCountDelta),
       now,
       now
     );
   }
+}
+
+export function generateReceiptNumber(database, currentYear) {
+  const row = database.prepare(`
+    SELECT MAX(CAST(SUBSTR(receipt_no, 10) AS INTEGER)) as maxNum 
+    FROM receipts 
+    WHERE receipt_no LIKE ?
+  `).get(`EMM-${currentYear}-%`);
+  const next = (row?.maxNum || 0) + 1;
+  return `EMM-${currentYear}-${String(next).padStart(4, '0')}`;
 }
 
 export function createReceipt(req, res) {
@@ -64,11 +76,9 @@ export function createReceipt(req, res) {
       return res.status(400).json({ error: 'अवैध रक्कम (Invalid amount).' });
     }
 
-    // Auto-generate receipt number: EMM-2024-XXXX
-    const currentYear = 2024;
-    const countRow = db.prepare('SELECT COUNT(*) as count FROM receipts').get();
-    const nextSeq = (countRow.count + 1).toString().padStart(4, '0');
-    const receipt_no = `EMM-${currentYear}-${nextSeq}`;
+    // Auto-generate receipt number: EMM-YYYY-XXXX (B1: Dynamic year, B2: MAX() sequential number)
+    const currentYear = new Date().getFullYear();
+    const receipt_no = generateReceiptNumber(db, currentYear);
 
     const id = crypto.randomUUID();
     const collector_id = req.user.id;
@@ -125,9 +135,33 @@ export function createReceipt(req, res) {
 
 export function listReceipts(req, res) {
   try {
-    const { status, search } = req.query;
+    const { status, search, donor_mobile, limit } = req.query;
     let query = 'SELECT * FROM receipts WHERE (is_cancelled = 0 OR is_cancelled IS NULL)';
     const params = [];
+
+    const isStaffOrAdmin = req.user && (
+      req.user.role === 'ADMIN' || 
+      req.user.role === 'SUPER_ADMIN' || 
+      req.user.role === 'TREASURER' || 
+      req.user.can_change_payment_status === 1
+    );
+
+    if (!isStaffOrAdmin) {
+      // Non-admin / devotee callers can strictly only access receipts for their own mobile or that they collected
+      const userMobile = req.user?.mobile ? req.user.mobile.replace(/\D/g, '') : '';
+      if (donor_mobile) {
+        const reqMobile = donor_mobile.replace(/\D/g, '');
+        if (reqMobile !== userMobile) {
+          return res.status(403).json({ error: 'अनधिकृत विनंती (Unauthorized: cannot view other donors receipts).' });
+        }
+      }
+      query += ' AND (donor_mobile = ? OR collector_id = ?)';
+      params.push(userMobile, req.user?.id || '');
+    } else if (donor_mobile) {
+      const cleanMob = donor_mobile.replace(/\D/g, '');
+      query += ' AND donor_mobile = ?';
+      params.push(cleanMob);
+    }
 
     if (status && status !== 'all') {
       query += ' AND payment_status = ?';
@@ -141,6 +175,12 @@ export function listReceipts(req, res) {
     }
 
     query += ' ORDER BY issue_date DESC';
+
+    const numLimit = parseInt(limit, 10);
+    if (!isNaN(numLimit) && numLimit > 0) {
+      query += ' LIMIT ?';
+      params.push(numLimit);
+    }
 
     const receipts = db.prepare(query).all(...params);
     res.json({ receipts });
@@ -257,27 +297,42 @@ export function updateReceiptStatus(req, res) {
       return res.status(400).json({ error: 'Invalid payment status.' });
     }
 
-    const receipt = db.prepare('SELECT * FROM receipts WHERE id = ?').get(id);
-    if (!receipt) {
-      return res.status(404).json({ error: 'Receipt not found.' });
-    }
+    const updateTx = db.transaction(() => {
+      const receipt = db.prepare('SELECT * FROM receipts WHERE id = ?').get(id);
+      if (!receipt) {
+        const err = new Error('Receipt not found.');
+        err.status = 404;
+        throw err;
+      }
 
-    db.prepare('UPDATE receipts SET payment_status = ? WHERE id = ?').run(payment_status, id);
-    const updated = db.prepare('SELECT * FROM receipts WHERE id = ?').get(id);
+      const oldStatus = receipt.payment_status;
+      db.prepare('UPDATE receipts SET payment_status = ? WHERE id = ?').run(payment_status, id);
 
-    // Sync donor
-    if (receipt.donor_mobile) {
-      syncDonorEntity(receipt.donor_name, receipt.donor_mobile, receipt.address_galli, receipt.amount, payment_status === 'Paid');
-    }
+      // B3: Prevent donor double-counting - sync only if payment status actually changed
+      if (receipt.donor_mobile) {
+        if (oldStatus !== 'Paid' && payment_status === 'Paid') {
+          syncDonorEntity(receipt.donor_name, receipt.donor_mobile, receipt.address_galli, receipt.amount, true, 1);
+        } else if (oldStatus === 'Paid' && payment_status !== 'Paid') {
+          syncDonorEntity(receipt.donor_name, receipt.donor_mobile, receipt.address_galli, -receipt.amount, true, -1);
+        }
+      }
+
+      return db.prepare('SELECT * FROM receipts WHERE id = ?').get(id);
+    });
+
+    const updated = updateTx();
 
     logAuditEvent(
       'UPDATE_RECEIPT_STATUS',
-      `पावती स्थिती बदलली: क्र. ${receipt.receipt_no} -> ${payment_status === 'Paid' ? 'जमा (Paid)' : 'पेंडींग (Unpaid)'}`,
+      `पावती स्थिती बदलली: क्र. ${updated.receipt_no} -> ${payment_status === 'Paid' ? 'जमा (Paid)' : 'पेंडींग (Unpaid)'}`,
       req.user
     );
 
     res.json({ receipt: updated });
   } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({ error: err.message });
+    }
     console.error('Update receipt status error:', err);
     res.status(500).json({ error: 'Failed to update receipt status.' });
   }
@@ -288,16 +343,33 @@ export function cancelReceipt(req, res) {
     const { id } = req.params;
     const { cancellation_reason } = req.body;
 
-    const receipt = db.prepare('SELECT * FROM receipts WHERE id = ?').get(id);
-    if (!receipt) {
-      return res.status(404).json({ error: 'Receipt not found.' });
-    }
+    const cancelTx = db.transaction(() => {
+      const receipt = db.prepare('SELECT * FROM receipts WHERE id = ?').get(id);
+      if (!receipt) {
+        const err = new Error('Receipt not found.');
+        err.status = 404;
+        throw err;
+      }
 
-    db.prepare(`
-      UPDATE receipts 
-      SET is_cancelled = 1, cancellation_reason = ? 
-      WHERE id = ?
-    `).run(cancellation_reason || 'Cancelled by authorized administrator', id);
+      if (receipt.is_cancelled === 1) {
+        return receipt;
+      }
+
+      db.prepare(`
+        UPDATE receipts 
+        SET is_cancelled = 1, cancellation_reason = ? 
+        WHERE id = ?
+      `).run(cancellation_reason || 'Cancelled by authorized administrator', id);
+
+      // If receipt was Paid, reverse its donor contribution
+      if (receipt.payment_status === 'Paid' && receipt.donor_mobile) {
+        syncDonorEntity(receipt.donor_name, receipt.donor_mobile, receipt.address_galli, -receipt.amount, true, -1);
+      }
+
+      return receipt;
+    });
+
+    const receipt = cancelTx();
 
     logAuditEvent(
       'CANCEL_RECEIPT',
@@ -307,6 +379,9 @@ export function cancelReceipt(req, res) {
 
     res.json({ success: true, message: `पावती क्र. ${receipt.receipt_no} रद्द करण्यात आली आहे.` });
   } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({ error: err.message });
+    }
     console.error('Cancel receipt error:', err);
     res.status(500).json({ error: 'Failed to cancel receipt.' });
   }

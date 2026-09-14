@@ -38,11 +38,13 @@ import { apiRequest } from '../utils/api';
 import { formatIndianCurrency } from '../utils/numberToWords';
 import { formatDate, formatTimestamp } from '../utils/dateUtils';
 import ReceiptCertificateModal from '../components/receipts/ReceiptCertificateModal';
+import { TEMPLE_ARTI_TIMINGS } from '../config/templeConfig';
 
 const PRESET_AMOUNTS = [101, 251, 501, 1001, 2100, 5001, 11000, 21000];
 
+const currentFestivalYear = new Date().getFullYear();
 const CONTRIBUTION_CATEGORIES = [
-  { code: 'GANESHOTSAV_2024', name_mr: '🚩 सार्वजनिक गणेशोत्सव २०२४ वर्गणी', name_en: 'Ganeshotsav 2024 Vargani' },
+  { code: 'GANESHOTSAV_2024', name_mr: `🚩 सार्वजनिक गणेशोत्सव ${currentFestivalYear} वर्गणी`, name_en: `Ganeshotsav ${currentFestivalYear} Vargani` },
   { code: 'MANDIR_DEVELOPMENT', name_mr: '🏛️ मंदिर जीर्णोद्धार व विकास निधी', name_en: 'Mandir Development & Renovation' },
   { code: 'MAHAPRASAD', name_mr: '🍲 महाप्रसाद व अन्नदान देणगी', name_en: 'Mahaprasad & Annadaan Fund' },
   { code: 'GENERAL', name_mr: '🪔 सामान्य देणगी / वर्गणी', name_en: 'General Vargani / Offering' },
@@ -354,7 +356,7 @@ export default function PublicDevoteePortalView({
             <div className="timing-icon">🔔</div>
             <div>
               <div className="timing-title">{lang === 'mr' ? 'दैनिक महाआरती' : 'Daily Maha Aarti'}</div>
-              <div className="timing-time">7:30 AM & 8:00 PM</div>
+              <div className="timing-time">{TEMPLE_ARTI_TIMINGS.morning} & {TEMPLE_ARTI_TIMINGS.evening}</div>
             </div>
           </div>
           <div className="timing-card">
@@ -824,7 +826,7 @@ export default function PublicDevoteePortalView({
                     <input
                       type="text"
                       className="form-input"
-                      placeholder="उदा. EMM-2024-0001"
+                      placeholder={`उदा. EMM-${new Date().getFullYear()}-0001`}
                       value={searchReceiptNo}
                       onChange={(e) => setSearchReceiptNo(e.target.value)}
                     />

@@ -39,7 +39,8 @@ class RootErrorBoundary extends React.Component {
           </p>
           <button
             onClick={() => {
-              localStorage.clear();
+              localStorage.removeItem('ekdant_auth_token');
+              localStorage.removeItem('ekdant_user');
               window.location.href = '/';
             }}
             style={{

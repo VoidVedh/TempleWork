@@ -146,8 +146,33 @@ function MainApp() {
   }
 
   // 3. ADMIN & COMMITTEE MANAGEMENT SUITE (Requires Auth)
+  if (!user) {
+    return (
+      <div className="site-wrapper">
+        <Navbar
+          currentView="devotee_portal"
+          onSelectView={navigateTo}
+          onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
+          onOpenUserDashboard={() => navigateTo('user_dashboard')}
+        />
+
+        <main className="public-main-content">
+          <LoginView
+            isModal={false}
+            onClose={() => navigateTo('dashboard')}
+            onBackToPublic={() => navigateTo('devotee_portal')}
+          />
+        </main>
+
+        <Footer
+          onSelectView={navigateTo}
+          onOpenAdminLogin={() => setIsAdminLoginModalOpen(true)}
+        />
+      </div>
+    );
+  }
+
   const canAccessAdmin = (view) => {
-    if (!user) return false;
     switch (view) {
       case 'expenses':
         return user.role === 'ADMIN' || user.role === 'TREASURER' || user.can_manage_expenses === 1;

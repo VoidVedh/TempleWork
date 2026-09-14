@@ -2,6 +2,16 @@ import db from '../config/database.js';
 import crypto from 'crypto';
 import { logAuditEvent } from '../utils/auditLogger.js';
 
+export function generateVoucherNumber(database, currentYear) {
+  const row = database.prepare(`
+    SELECT MAX(CAST(SUBSTR(voucher_no, 10) AS INTEGER)) as maxNum 
+    FROM expenses 
+    WHERE voucher_no LIKE ?
+  `).get(`EXP-${currentYear}-%`);
+  const next = (row?.maxNum || 0) + 1;
+  return `EXP-${currentYear}-${String(next).padStart(4, '0')}`;
+}
+
 export function createExpense(req, res) {
   try {
     const { title, category, amount, paid_to, payment_method, authorized_by, expense_date, reason } = req.body;
@@ -15,10 +25,8 @@ export function createExpense(req, res) {
       return res.status(400).json({ error: 'अवैध रक्कम (Invalid amount).' });
     }
 
-    const currentYear = 2024;
-    const countRow = db.prepare('SELECT COUNT(*) as count FROM expenses').get();
-    const nextSeq = (countRow.count + 1).toString().padStart(4, '0');
-    const voucher_no = `EXP-${currentYear}-${nextSeq}`;
+    const currentYear = new Date().getFullYear();
+    const voucher_no = generateVoucherNumber(db, currentYear);
 
     const id = crypto.randomUUID();
     const recorder_id = req.user.id;

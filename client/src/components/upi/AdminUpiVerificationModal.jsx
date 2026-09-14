@@ -3,16 +3,11 @@ import {
   X,
   CheckCircle,
   XCircle,
-  Clock,
   ShieldCheck,
-  User,
-  Phone,
-  Hash,
-  CreditCard,
   RefreshCw,
   AlertTriangle,
-  FileCheck,
-  Ban
+  Ban,
+  Search
 } from 'lucide-react';
 import { apiRequest } from '../../utils/api';
 import { formatIndianCurrency } from '../../utils/numberToWords';
@@ -23,7 +18,11 @@ export default function AdminUpiVerificationModal({ isOpen, onClose, onReceiptCr
   const { t } = useLanguage();
   const [pendingList, setPendingList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [actionLoadingId, setActionLoadingId] = useState(null);
+
+  // Verification Review Confirmation State
+  const [verifyingItem, setVerifyingItem] = useState(null);
 
   // Reject Dialog Modal State
   const [rejectingItem, setRejectingItem] = useState(null);
@@ -44,22 +43,34 @@ export default function AdminUpiVerificationModal({ isOpen, onClose, onReceiptCr
   useEffect(() => {
     if (isOpen) {
       fetchPending();
+      setSearchQuery('');
+      setVerifyingItem(null);
+      setRejectingItem(null);
     }
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const handleVerify = async (item) => {
-    const confirmMsg = `दात्याचे नाव: ${item.donor_name}\nमोबाईल: ${item.donor_mobile}\nरक्कम: ₹${item.amount}\nसंदर्भ: ${item.intent_ref || 'N/A'}\nUTR: ${item.upi_ref_no}\n\n⚠️ आपण बँक/UPI खात्यात ही रक्कम जमा झाल्याची प्रत्यक्ष खात्री केली आहे का?\nमंजूर केल्यास अधिकृत पावती त्वरित तयार होईल.`;
-    
-    if (!window.confirm(confirmMsg)) {
-      return;
-    }
+  const filteredList = pendingList.filter((item) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      (item.donor_name && item.donor_name.toLowerCase().includes(q)) ||
+      (item.donor_mobile && item.donor_mobile.includes(q)) ||
+      (item.upi_ref_no && item.upi_ref_no.toLowerCase().includes(q)) ||
+      (item.intent_ref && item.intent_ref.toLowerCase().includes(q))
+    );
+  });
+
+  const handleConfirmVerify = async () => {
+    if (!verifyingItem) return;
+    const item = verifyingItem;
 
     try {
       setActionLoadingId(item.id);
       const res = await apiRequest(`/upi/${item.id}/verify`, { method: 'POST' });
-      alert(res.message || 'वर्गणी पडताळणी पूर्ण झाली व अधिकृत पावती तयार झाली!');
+      alert(res.message || 'वर्गणी पडताळणी यशस्वी! अधिकृत पावती तयार झाली.');
+      setVerifyingItem(null);
       await fetchPending();
       if (onReceiptCreated) {
         onReceiptCreated(res.receipt);
@@ -99,7 +110,7 @@ export default function AdminUpiVerificationModal({ isOpen, onClose, onReceiptCr
     <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-container"
-        style={{ maxWidth: '720px', width: '100%', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+        style={{ maxWidth: '740px', width: '100%', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -144,39 +155,49 @@ export default function AdminUpiVerificationModal({ isOpen, onClose, onReceiptCr
               <strong style={{ display: 'block', marginBottom: '2px', color: '#92400e' }}>
                 ⚠️ महत्त्वाची आर्थिक सुरक्षा सूचना (Evidence-Based Verification Rule):
               </strong>
-              दात्याने दिलेला UTR क्रमांक हा पुरावा नाही. मंडळाच्या <strong>SBI बँक स्टेटमेंट किंवा Google Pay/PhonePe व्यापारी ॲपमध्ये</strong> प्रत्यक्ष रक्कम प्राप्त झाल्याची खात्री करूनच <strong>'पडताळणी मंजूर करा'</strong>. खोटे किंवा विसंगत UTR त्वरित <strong>'अमान्य'</strong> करा.
+              दात्याने दिलेला UTR क्रमांक हा पुरावा नाही. मंडळाच्या <strong>बँक खाते किंवा व्यापारी UPI ॲपमध्ये</strong> प्रत्यक्ष रक्कम जमा झाल्याची खात्री करूनच <strong>'पडताळणी मंजूर करा'</strong>.
             </div>
           </div>
 
-          {/* List Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 800, color: '#475569' }}>
-              पडताळणी प्रलंबित नोंदी: <strong style={{ color: '#7f1d1d' }}>{pendingList.length}</strong>
-            </span>
+          {/* Search & Refresh Controls Bar */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: '220px' }}>
+              <Search size={14} style={{ position: 'absolute', left: '10px', top: '10px', color: '#94a3b8' }} />
+              <input
+                type="text"
+                className="form-input"
+                placeholder="नाव, मोबाईल किंवा UTR द्वारे शोधा..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ paddingLeft: '32px', fontSize: '12px', height: '34px' }}
+              />
+            </div>
             <button
               type="button"
               onClick={fetchPending}
               className="btn btn-outline-white"
-              style={{ padding: '4px 10px', fontSize: '11.5px', color: '#7f1d1d', borderColor: '#fed7aa', background: '#fffbeb', fontWeight: 700 }}
+              style={{ padding: '6px 12px', fontSize: '11.5px', color: '#7f1d1d', borderColor: '#fed7aa', background: '#fffbeb', fontWeight: 700, height: '34px' }}
             >
-              <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
-              <span>ताजे करा (Refresh)</span>
+              <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
+              <span>ताजे करा ({pendingList.length})</span>
             </button>
           </div>
 
           {loading ? (
             <div className="empty-state-text">प्रलंबित वर्गणी माहिती लोड होत आहे...</div>
-          ) : pendingList.length === 0 ? (
+          ) : filteredList.length === 0 ? (
             <div className="devotional-empty-box" style={{ padding: '36px 16px' }}>
               <span className="devotional-empty-icon">✨</span>
-              <div className="devotional-empty-title">कोणतीही प्रलंबित UPI वर्गणी नाही</div>
+              <div className="devotional-empty-title">
+                {searchQuery ? 'शोध परिणामात कोणतीही नोंद सापडली नाही' : 'कोणतीही प्रलंबित UPI वर्गणी नाही'}
+              </div>
               <div className="devotional-empty-desc">
-                सर्व प्राप्त ऑनलाइन वर्गणी नोंदी पडताळल्या गेल्या आहेत. नवीन नोंदी आल्यास येथे दिसतील.
+                {searchQuery ? 'कृपया दुसरा शब्द किंवा UTR क्रमांक टाकून पहा.' : 'सर्व प्राप्त ऑनलाइन वर्गणी नोंदी पडताळल्या गेल्या आहेत.'}
               </div>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {pendingList.map((item) => (
+              {filteredList.map((item) => (
                 <div
                   key={item.id}
                   style={{
@@ -198,6 +219,7 @@ export default function AdminUpiVerificationModal({ isOpen, onClose, onReceiptCr
                           {item.payment_app || 'UPI'}
                         </span>
                       </div>
+
                       <div style={{ fontSize: '11px', color: '#64748b', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                         <span>📱 मो: <strong>{item.donor_mobile || 'N/A'}</strong></span>
                         <span>⏰ वेळ: {formatTimestamp(item.submitted_at || item.created_at)}</span>
@@ -233,18 +255,18 @@ export default function AdminUpiVerificationModal({ isOpen, onClose, onReceiptCr
                     )}
                   </div>
 
-                  {/* Actions */}
+                  {/* Action Buttons */}
                   <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '2px' }}>
                     <button
                       type="button"
                       className="btn btn-green"
                       style={{ fontSize: '12px', padding: '7px 14px', fontWeight: 800 }}
                       disabled={actionLoadingId === item.id}
-                      onClick={() => handleVerify(item)}
+                      onClick={() => setVerifyingItem(item)}
                       id={`btn-verify-upi-${item.id}`}
                     >
                       <CheckCircle size={15} />
-                      <span>{actionLoadingId === item.id ? 'पडताळत आहे...' : '✓ पडताळणी मंजूर करा (Verify & Issue Receipt)'}</span>
+                      <span>पडताळणी करा (Verify & Issue Receipt)</span>
                     </button>
 
                     <button
@@ -264,6 +286,80 @@ export default function AdminUpiVerificationModal({ isOpen, onClose, onReceiptCr
             </div>
           )}
         </div>
+
+        {/* Verification Review & Confirmation Sub-Modal */}
+        {verifyingItem && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.65)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 9999,
+              padding: '16px'
+            }}
+            onClick={() => setVerifyingItem(null)}
+          >
+            <div
+              style={{
+                backgroundColor: '#ffffff',
+                borderRadius: '14px',
+                padding: '20px',
+                maxWidth: '460px',
+                width: '100%',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+                border: '2px solid #bbf7d0'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#15803d', marginBottom: '12px' }}>
+                <CheckCircle size={22} />
+                <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 900, color: '#14532d' }}>
+                  वर्गणी पडताळणी निश्चित करा (Verify Contribution)
+                </h4>
+              </div>
+
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '12px', marginBottom: '14px', fontSize: '12.5px', color: '#166534', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div><strong>दाता:</strong> {verifyingItem.donor_name}</div>
+                <div><strong>मोबाईल:</strong> +91 {verifyingItem.donor_mobile}</div>
+                <div><strong>रक्कम:</strong> <span style={{ fontSize: '15px', fontWeight: 900, color: '#15803d' }}>{formatIndianCurrency(verifyingItem.amount)}</span></div>
+                <div><strong>दाव्याचा UTR:</strong> <code style={{ fontWeight: 800, background: '#dcfce7', padding: '1px 6px', borderRadius: '4px' }}>{verifyingItem.upi_ref_no}</code></div>
+                <div><strong>संदर्भ क्र.:</strong> {verifyingItem.intent_ref || 'N/A'}</div>
+                <div><strong>नोंदणी वेळ:</strong> {formatTimestamp(verifyingItem.submitted_at || verifyingItem.created_at)}</div>
+              </div>
+
+              <p style={{ fontSize: '11.5px', color: '#475569', marginBottom: '14px', lineHeight: 1.4 }}>
+                ⚠️ <em>आपण बँक स्टेटमेंटमध्ये ही रक्कम जमा झाल्याची खात्री केली आहे का? पडताळणी मंजूर केल्यास अधिकृत पावती क्रमांक तयार होईल व दात्यास उपलब्ध होईल.</em>
+              </p>
+
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  className="btn btn-outline"
+                  onClick={() => setVerifyingItem(null)}
+                  style={{ fontSize: '12px' }}
+                >
+                  रद्द करा (Cancel)
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-green"
+                  onClick={handleConfirmVerify}
+                  style={{ fontSize: '12px', fontWeight: 800 }}
+                  disabled={actionLoadingId === verifyingItem.id}
+                >
+                  {actionLoadingId === verifyingItem.id ? 'पावती तयार होत आहे...' : '✓ खात्री केली, पावती तयार करा (Verify)'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Rejection Prompt Sub-Modal */}
         {rejectingItem && (
@@ -343,4 +439,3 @@ export default function AdminUpiVerificationModal({ isOpen, onClose, onReceiptCr
     </div>
   );
 }
-

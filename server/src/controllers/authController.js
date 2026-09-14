@@ -15,10 +15,8 @@ export async function login(req, res) {
 
     const user = db.prepare(`
       SELECT * FROM users 
-      WHERE LOWER(mobile) = LOWER(?) 
-         OR (username IS NOT NULL AND LOWER(username) = LOWER(?))
-         OR LOWER(name) = LOWER(?)
-    `).get(identifier, identifier, identifier);
+      WHERE LOWER(mobile) = LOWER(?)
+    `).get(identifier);
 
     if (!user) {
       return res.status(401).json({ error: 'वापरकर्ता नाव किंवा मोबाईल नंबर सापडला नाही (Invalid Username or Mobile)' });

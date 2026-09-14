@@ -4,7 +4,7 @@ export const MANDAL_CONFIG = {
   locationEn: process.env.MANDAL_LOCATION_EN || 'Airoli Sector-5, Navi Mumbai 400708',
   locationMr: process.env.MANDAL_LOCATION_MR || 'ऐरोली सेक्टर-५, नवी मुंबई ४००७०८',
   regNo: process.env.MANDAL_REG_NO || 'MH/08/2024',
-  year: parseInt(process.env.MANDAL_YEAR || '2024', 10),
+  year: parseInt(process.env.MANDAL_YEAR || new Date().getFullYear(), 10),
   
   // Official Centralized Mandal UPI Configuration
   upiId: process.env.MANDAL_UPI_ID || '9029359525m@pnb',

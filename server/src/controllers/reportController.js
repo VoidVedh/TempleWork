@@ -80,6 +80,68 @@ export function getFinancialReports(req, res) {
   }
 }
 
+export function getCategoryBreakdown(req, res) {
+  try {
+    const expRow = db.prepare(`
+      SELECT COALESCE(SUM(amount), 0) as total
+      FROM expenses
+      WHERE (is_cancelled = 0 OR is_cancelled IS NULL) AND (status = 'APPROVED' OR status IS NULL)
+    `).get();
+    const total_expenses = expRow.total;
+
+    const categoryStats = db.prepare(`
+      SELECT category, COALESCE(SUM(amount), 0) as total, COUNT(*) as count
+      FROM expenses
+      WHERE (is_cancelled = 0 OR is_cancelled IS NULL) AND (status = 'APPROVED' OR status IS NULL)
+      GROUP BY category
+      ORDER BY total DESC
+    `).all();
+
+    const categories = categoryStats.map(c => ({
+      category: c.category,
+      amount: c.total,
+      count: c.count,
+      percentage: total_expenses > 0 ? Math.round((c.total / total_expenses) * 100) : 0
+    }));
+
+    res.json({ categories });
+  } catch (err) {
+    console.error('Get category breakdown error:', err);
+    res.status(500).json({ error: 'Failed to generate category breakdown.' });
+  }
+}
+
+export function getPaymentModes(req, res) {
+  try {
+    const paidRow = db.prepare(`
+      SELECT COALESCE(SUM(amount), 0) as total
+      FROM receipts
+      WHERE payment_status = 'Paid' AND (is_cancelled = 0 OR is_cancelled IS NULL)
+    `).get();
+    const total_paid = paidRow.total;
+
+    const paymentModeStats = db.prepare(`
+      SELECT payment_mode, COALESCE(SUM(amount), 0) as total, COUNT(*) as count
+      FROM receipts
+      WHERE payment_status = 'Paid' AND (is_cancelled = 0 OR is_cancelled IS NULL)
+      GROUP BY payment_mode
+      ORDER BY total DESC
+    `).all();
+
+    const payment_modes = paymentModeStats.map(p => ({
+      payment_mode: p.payment_mode,
+      amount: p.total,
+      count: p.count,
+      percentage: total_paid > 0 ? Math.round((p.total / total_paid) * 100) : 0
+    }));
+
+    res.json({ payment_modes });
+  } catch (err) {
+    console.error('Get payment modes error:', err);
+    res.status(500).json({ error: 'Failed to generate payment modes.' });
+  }
+}
+
 export function exportReceiptsCSV(req, res) {
   try {
     const receipts = db.prepare(`

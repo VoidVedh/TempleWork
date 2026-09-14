@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart, ShieldCheck, MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { TEMPLE_ARTI_TIMINGS } from '../../config/templeConfig';
 
 export default function Footer({ onSelectView, onOpenAdminLogin }) {
   const { lang, t } = useLanguage();
@@ -23,14 +24,14 @@ export default function Footer({ onSelectView, onOpenAdminLogin }) {
               : 'Shree Siddhivinayak Mandir is a sacred sanctuary of faith, cultural heritage, and community welfare in Airoli, Navi Mumbai.'}
           </p>
           <div className="footer-trust-badge">
-            <ShieldCheck size={16} />
-            <span>{t('regNo')}</span>
+            <ShieldCheck size={14} color="#15803d" />
+            <span>{t('regNo')} • 100% Transparent Trust</span>
           </div>
         </div>
 
         {/* Quick Links */}
         <div className="footer-col-links">
-          <h4 className="footer-section-title">{lang === 'mr' ? 'महत्त्वाचे दुवे' : 'Quick Links'}</h4>
+          <h4 className="footer-section-title">{lang === 'mr' ? 'जलद दुवे (Quick Links)' : 'Quick Links'}</h4>
           <ul className="footer-links-list">
             <li><button onClick={() => onSelectView('devotee_portal')}>{t('navHome')}</button></li>
             <li><button onClick={() => onSelectView('pay_vargani')}>{t('navContribute')}</button></li>
@@ -43,15 +44,15 @@ export default function Footer({ onSelectView, onOpenAdminLogin }) {
           <h4 className="footer-section-title">{t('timingsLabel')}</h4>
           <div className="footer-timing-item">
             <span>{lang === 'mr' ? 'मंदिर दर्शन:' : 'Darshan:'}</span>
-            <strong>०६:०० AM - १०:०० PM</strong>
+            <strong>{lang === 'mr' ? TEMPLE_ARTI_TIMINGS.darshan_hours_mr : TEMPLE_ARTI_TIMINGS.darshan_hours}</strong>
           </div>
           <div className="footer-timing-item">
             <span>{lang === 'mr' ? 'सकाळची महाआरती:' : 'Morning Aarti:'}</span>
-            <strong>०७:३० AM</strong>
+            <strong>{lang === 'mr' ? TEMPLE_ARTI_TIMINGS.morning_mr : TEMPLE_ARTI_TIMINGS.morning}</strong>
           </div>
           <div className="footer-timing-item">
             <span>{lang === 'mr' ? 'संध्याकाळची महाआरती:' : 'Evening Aarti:'}</span>
-            <strong>०८:०० PM</strong>
+            <strong>{lang === 'mr' ? TEMPLE_ARTI_TIMINGS.evening_mr : TEMPLE_ARTI_TIMINGS.evening}</strong>
           </div>
           <div className="footer-timing-item">
             <span>{lang === 'mr' ? 'स्थानिक शाखा:' : 'Branch:'}</span>

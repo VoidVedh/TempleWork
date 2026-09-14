@@ -48,6 +48,48 @@ export function getMembersAndLeaderboard(req, res) {
   }
 }
 
+export function getLeaderboard(req, res) {
+  try {
+    const members = db.prepare(`
+      SELECT id, name, name_mr, mobile, role, can_change_payment_status, can_manage_expenses, is_active, is_protected_founder, created_at
+      FROM users
+      ORDER BY is_protected_founder DESC, created_at ASC
+    `).all();
+
+    const leaderboardStats = db.prepare(`
+      SELECT collector_id, COUNT(*) as receipt_count, SUM(amount) as total_collected
+      FROM receipts
+      WHERE payment_status = 'Paid'
+      GROUP BY collector_id
+    `).all();
+
+    const statsMap = {};
+    leaderboardStats.forEach(stat => {
+      statsMap[stat.collector_id] = {
+        receipt_count: stat.receipt_count,
+        total_collected: stat.total_collected
+      };
+    });
+
+    const leaderboard = members.map(m => {
+      const stat = statsMap[m.id] || { receipt_count: 0, total_collected: 0 };
+      return {
+        id: m.id,
+        name: m.name,
+        name_mr: m.name_mr,
+        role: m.role,
+        receipt_count: stat.receipt_count,
+        total_collected: stat.total_collected
+      };
+    }).sort((a, b) => b.total_collected - a.total_collected);
+
+    res.json({ leaderboard });
+  } catch (err) {
+    console.error('Get leaderboard error:', err);
+    res.status(500).json({ error: 'Failed to retrieve leaderboard.' });
+  }
+}
+
 export async function createMember(req, res) {
   try {
     const { name, name_mr, mobile, password, role, can_change_payment_status, can_manage_expenses, is_active } = req.body;

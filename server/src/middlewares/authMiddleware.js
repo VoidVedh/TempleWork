@@ -1,7 +1,14 @@
 import jwt from 'jsonwebtoken';
 import db from '../config/database.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ekdant-secret-key-2024-sacred-mandal';
+let JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET is required in production and is not set.');
+  }
+  console.warn('⚠️  JWT_SECRET not set — using an insecure dev-only default.');
+  JWT_SECRET = 'ekdant-secret-key-dev-only-insecure';
+}
 
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];

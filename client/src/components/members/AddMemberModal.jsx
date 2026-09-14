@@ -150,7 +150,7 @@ export default function AddMemberModal({ isOpen, onClose, editingMember, onMembe
             {t('memberPasswordField')} {editingMember ? '(बदलायचा असल्यास टाका)' : <span className="required-star">*</span>}
           </label>
           <input
-            type="text"
+            type="password"
             className="form-input no-icon"
             placeholder={editingMember ? 'नवीन पासवर्ड टाका...' : '123456'}
             value={password}
